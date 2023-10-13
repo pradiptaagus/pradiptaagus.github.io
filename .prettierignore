@@ -1,17 +1,5 @@
 # Ignore artifacts:
 dist
+docs
 coverage
 node_modules
-.prettierignore
-.prettierrc.json
-postcss.config.js
-package-lock.json
-package.json
-yarn.lock
-tailwind.config.js
-tsconfig.json
-tslint.json
-webpack.common.js
-webpack.dev.js
-webpack.prod.js
-public
