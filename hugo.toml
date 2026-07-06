@@ -1,0 +1,104 @@
+baseURL = 'https://pradiptaagus.github.io/'
+locale = 'en-us'
+title = 'Pradipta Agus'
+theme = 'PaperMod'
+paginate = 10
+enableRobotsTXT = true
+enableEmoji = true
+
+[markup]
+  [markup.highlight]
+    style = 'catppuccin-mocha'
+    noClasses = true
+
+[sitemap]
+  changefreq = 'monthly'
+  priority = 0.8
+  filename = 'sitemap.xml'
+
+[author]
+  name = 'I Gede Agus Pradipta'
+  email = 'igedeaguspradipta@gmail.com'
+
+[params]
+  env = 'production'
+  description = 'Enterprise Frontend Engineer specializing in Angular, React, Go, and Micro-Frontends'
+  author = 'I Gede Agus Pradipta'
+  keywords = ['portfolio', 'frontend engineer', 'angular', 'react', 'go', 'micro-frontends', 'bali']
+  defaultTheme = 'auto'
+  disableThemeToggle = false
+  ShowReadingTime = true
+  ShowShareButtons = true
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowWordCount = true
+  comments = false
+  images = ['images/avatar.svg']
+
+  [params.schema]
+    publisherType = 'Person'
+
+  [params.profileMode]
+    enabled = true
+    title = 'Pradipta Agus'
+    subtitle = 'Enterprise Frontend Engineer'
+    imageUrl = 'images/avatar.svg'
+    imageWidth = 160
+    imageHeight = 160
+    buttons = [
+      { name = 'Portfolio', url = '/portfolio/' },
+      { name = 'Blog', url = '/blog/' },
+      { name = 'About', url = '/about/' },
+    ]
+
+  [params.social]
+    github = 'pradiptaagus'
+    linkedin = 'i-gede-agus-pradipta-269370167'
+
+[[params.socialIcons]]
+  name = 'github'
+  url = 'https://github.com/pradiptaagus'
+
+[[params.socialIcons]]
+  name = 'linkedin'
+  url = 'https://linkedin.com/in/i-gede-agus-pradipta-269370167'
+
+[[params.socialIcons]]
+  name = 'email'
+  url = 'mailto:igedeaguspradipta@gmail.com'
+
+[[params.socialIcons]]
+  name = 'whatsapp'
+  url = 'https://wa.me/6289627005727?text=Hi%20Pradipta%2C%20I%20saw%20your%20portfolio'
+
+[[menu.main]]
+  identifier = 'home'
+  name = 'Home'
+  url = '/'
+  weight = 1
+
+[[menu.main]]
+  identifier = 'about'
+  name = 'About'
+  url = '/about/'
+  weight = 2
+
+[[menu.main]]
+  identifier = 'portfolio'
+  name = 'Portfolio'
+  url = '/portfolio/'
+  weight = 3
+
+[[menu.main]]
+  identifier = 'blog'
+  name = 'Blog'
+  url = '/blog/'
+  weight = 4
+
+[[menu.main]]
+  identifier = 'resume'
+  name = 'Resume'
+  url = '/resume/'
+  weight = 5
+
