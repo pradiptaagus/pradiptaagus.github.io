@@ -1,0 +1,22 @@
+@tailwind utilities;
+
+body, .main, .header, .footer, .post-entry, .entry-header, .entry-content,
+h1, h2, h3, h4, h5, h6, p, li, a, span, div, th, td, label, input, button,
+nav, section, article, header, footer, aside, main {
+  font-family: 'IBM Plex Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+}
+
+code, pre, kbd, samp, .highlight, .highlight *,
+code[class*="language-"], pre[class*="language-"],
+pre code {
+  font-family: 'Fira Code', 'SF Mono', 'Cascadia Code', 'IBM Plex Mono', monospace;
+}
+
+.post-content p,
+.post-content li,
+.post-content td,
+.post-content th {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+

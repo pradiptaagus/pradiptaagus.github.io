@@ -1,0 +1,18 @@
+{
+  "scripts": {
+    "build:css": "tailwindcss -i assets/css/tailwind.css -o static/css/tailwind.css --minify",
+    "dev:css": "tailwindcss -i assets/css/tailwind.css -o static/css/tailwind.css --watch",
+    "dev": "npm run build:css && concurrently \"npm run dev:css\" \"hugo server -D --noBuildLock --baseURL http://localhost:1313/\""
+  },
+  "name": "portfolio",
+  "private": true,
+  "dependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.3",
+    "postcss-cli": "^11.0.1"
+  }
+}
