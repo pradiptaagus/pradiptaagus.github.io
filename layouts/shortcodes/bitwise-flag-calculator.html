@@ -1,0 +1,126 @@
+<div
+  class="bitwise-calculator tw-flex tw-flex-col tw-gap-10 tw-items-center tw-p-4 tw-text-white tw-bg-[#1c1d21] dark:tw-bg-[#2e2e33] tw-rounded"
+>
+  <h2 class="tw-text-xl tw-text-center tw-font-bold !tw-m-0 tw-text-inherit">
+    Bitwise Flag Calculator
+  </h2>
+  <!-- Input Flags -->
+  <div
+    class="tw-flex tw-flex-row tw-flex-nowrap tw-gap-1 tw-justify-center"
+    id="bitwise-flags"
+  ></div>
+
+  <!-- Readable Value -->
+  <div
+    class="tw-flex tw-items-stretch tw-flex-row tw-gap-20 tw-justify-between tw-flex-nowrap"
+  >
+    <div class="tw-flex tw-flex-col tw-items-center tw-flex-1">
+      <small class="tw-text-sm tw-text-nowrap">Decimal Value</small>
+      <span class="decimal-value tw-text-lg tw-font-semibold">0</span>
+    </div>
+    <div
+      class="tw-border-0 tw-border-l tw-border-solid tw-flex-shrink-0 tw-flex-grow-0 tw-my-2"
+    ></div>
+    <div class="tw-flex tw-flex-col tw-items-center tw-flex-1">
+      <small class="tw-text-sm tw-text-nowrap">Binary Value</small>
+      <span class="binary-value tw-text-lg tw-font-semibold">00000000</span>
+    </div>
+  </div>
+
+  <!-- Swtches -->
+  <div
+    class="tw-grid tw-grid-cols-2 tw-gap-x-20 tw-gap-y-5"
+    id="switches"
+  ></div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Initialize the bitwise flags display
+    (() => {
+      const bitwiseFlagsContainer = document.querySelector(
+        ".bitwise-calculator #bitwise-flags",
+      );
+      bitwiseFlagsContainer.innerHTML = "";
+      for (let i = 7; i >= 0; i--) {
+        const flagDiv = document.createElement("div");
+        flagDiv.className =
+          "tw-flex tw-flex-col tw-gap-0.5 tw-items-center tw-w-10";
+        const digitDiv = document.createElement("div");
+        digitDiv.className =
+          "digit tw-border-2 tw-border-solid tw-border-gray-700 dark:tw-border-gray-50 tw-rounded tw-w-10 tw-h-10 tw-flex tw-justify-center tw-items-center tw-text-base";
+        digitDiv.textContent = "0";
+        const smallLabel = document.createElement("small");
+        smallLabel.className =
+          "tw-text-xs tw-text-gray-500 dark:tw-text-gray-400 tw-text-center";
+        smallLabel.textContent = `2^${i}`;
+        flagDiv.appendChild(digitDiv);
+        flagDiv.appendChild(smallLabel);
+        bitwiseFlagsContainer.appendChild(flagDiv);
+      }
+    })();
+
+    // Initialize the switches
+    (() => {
+      const switchesContainer = document.querySelector(
+        ".bitwise-calculator #switches",
+      );
+      switchesContainer.innerHTML = "";
+      for (let i = 0; i < 8; i++) {
+        const switchDiv = document.createElement("div");
+        switchDiv.className =
+          "tw-flex tw-flex-row tw-justify-start tw-items-center tw-gap-2";
+
+        const label = document.createElement("label");
+        label.className = "tw-text-sm tw-font-semibold tw-select-none";
+        label.setAttribute("for", `bitwise-flag-switch-${i + 1}`);
+        label.textContent = `Bit ${i} (${Math.pow(2, i)})`;
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = `bitwise-flag-switch-${i + 1}`;
+        checkbox.className = "tw-w-5 tw-h-5";
+        checkbox.addEventListener("change", updateValues);
+
+        switchDiv.appendChild(checkbox);
+        switchDiv.appendChild(label);
+        switchesContainer.appendChild(switchDiv);
+      }
+    })();
+
+    const digits = document.querySelectorAll(".bitwise-calculator .digit");
+    const switches = document.querySelectorAll(
+      ".bitwise-calculator input[type='checkbox']",
+    );
+    const decimalValueElement = document.querySelector(
+      ".bitwise-calculator .decimal-value",
+    );
+    const binaryValueElement = document.querySelector(
+      ".bitwise-calculator .binary-value",
+    );
+
+    function updateValues() {
+      let decimalValue = 0;
+      let binaryValue = "";
+
+      switches.forEach((checkbox, index) => {
+        if (checkbox.checked) {
+          decimalValue += Math.pow(2, index);
+          binaryValue = "1" + binaryValue;
+
+          const digitElement = digits[7 - index];
+          digitElement.textContent = "1";
+          digitElement.classList.add("tw-bg-blue-500", "tw-text-white");
+        } else {
+          binaryValue = "0" + binaryValue;
+          const digitElement = digits[7 - index];
+          digitElement.textContent = "0";
+          digitElement.classList.remove("tw-bg-blue-500", "tw-text-white");
+        }
+      });
+
+      decimalValueElement.textContent = decimalValue;
+      binaryValueElement.textContent = binaryValue;
+    }
+  });
+</script>

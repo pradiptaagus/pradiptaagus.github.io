@@ -1,0 +1,199 @@
+<div
+  class="bitwise-state-manager tw-flex tw-flex-col tw-gap-10 tw-items-center tw-p-4 tw-text-white tw-bg-[#1c1d21] dark:tw-bg-[#2e2e33] tw-rounded"
+>
+  <h2 class="tw-text-xl tw-text-center tw-font-bold !tw-m-0 tw-text-inherit">
+    Bitwise State Manager
+  </h2>
+  <!-- Input Flags -->
+  <div
+    class="tw-flex tw-flex-row tw-flex-nowrap tw-gap-1 tw-justify-center"
+    id="bitwise-flags"
+  ></div>
+
+  <!-- Active Settings -->
+  <div
+    class="tw-flex-row tw-flex-wrap tw-gap-1 tw-justify-center tw-hidden"
+    id="active-settings"
+  ></div>
+
+  <!-- Readable Value -->
+  <div
+    class="tw-flex tw-items-stretch tw-flex-row tw-gap-20 tw-justify-between tw-flex-nowrap"
+  >
+    <div class="tw-flex tw-flex-col tw-items-center tw-flex-1">
+      <small class="tw-text-sm tw-text-nowrap">Decimal Value</small>
+      <span class="decimal-value tw-text-lg tw-font-semibold">0</span>
+    </div>
+    <div
+      class="tw-border-0 tw-border-l tw-border-solid tw-flex-shrink-0 tw-flex-grow-0 tw-my-2"
+    ></div>
+    <div class="tw-flex tw-flex-col tw-items-center tw-flex-1">
+      <small class="tw-text-sm tw-text-nowrap">Binary Value</small>
+      <span class="binary-value tw-text-lg tw-font-semibold">00000000</span>
+    </div>
+  </div>
+
+  <!-- Swtches -->
+  <div
+    class="tw-grid tw-grid-cols-2 tw-gap-x-20 tw-gap-y-5"
+    id="switches"
+  ></div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const actions = [
+      "Autosave",
+      "FormatOnType",
+      "WordWrap",
+      "ShowLines",
+      "MinimapEnabled",
+    ];
+
+    // Initialize the bitwise flags display
+    (() => {
+      const bitwiseFlagsContainer = document.querySelector(
+        ".bitwise-state-manager #bitwise-flags",
+      );
+      bitwiseFlagsContainer.innerHTML = "";
+      for (let i = 7; i >= 0; i--) {
+        const flagDiv = document.createElement("div");
+        flagDiv.className =
+          "tw-flex tw-flex-col tw-gap-0.5 tw-items-center tw-w-10";
+        const digitDiv = document.createElement("div");
+        digitDiv.className =
+          "digit tw-border-2 tw-border-solid tw-border-gray-700 dark:tw-border-gray-50 tw-rounded tw-w-10 tw-h-10 tw-flex tw-justify-center tw-items-center tw-text-base";
+        digitDiv.textContent = "0";
+        const smallLabel = document.createElement("small");
+        smallLabel.className =
+          "tw-text-xs tw-text-gray-500 dark:tw-text-gray-400 tw-text-center";
+        smallLabel.textContent = `2^${i}`;
+        flagDiv.appendChild(digitDiv);
+        flagDiv.appendChild(smallLabel);
+        bitwiseFlagsContainer.appendChild(flagDiv);
+      }
+    })();
+
+    // Initialize the switches
+    (() => {
+      const switchesContainer = document.querySelector(
+        ".bitwise-state-manager #switches",
+      );
+      switchesContainer.innerHTML = "";
+      for (let i = 0; i < actions.length; i++) {
+        const switchDiv = document.createElement("div");
+        switchDiv.className =
+          "tw-flex tw-flex-row tw-justify-start tw-items-center tw-gap-2";
+
+        const label = document.createElement("label");
+        label.className = "tw-text-sm tw-font-semibold tw-select-none";
+        label.setAttribute("for", `bitwise-state-manager-switch-${i + 1}`);
+        label.textContent = `${actions[i]} (${i})`;
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = `bitwise-state-manager-switch-${i + 1}`;
+        checkbox.className = "tw-w-5 tw-h-5";
+        checkbox.addEventListener("change", updateValues);
+
+        switchDiv.appendChild(checkbox);
+        switchDiv.appendChild(label);
+        switchesContainer.appendChild(switchDiv);
+      }
+    })();
+
+    const digits = document.querySelectorAll(".bitwise-state-manager .digit");
+    const switches = document.querySelectorAll(
+      ".bitwise-state-manager input[type='checkbox']",
+    );
+    const decimalValueElement = document.querySelector(
+      ".bitwise-state-manager .decimal-value",
+    );
+    const binaryValueElement = document.querySelector(
+      ".bitwise-state-manager .binary-value",
+    );
+    const activeSettingsContainer = document.querySelector(
+      ".bitwise-state-manager #active-settings",
+    );
+    const settingColors = [
+      "tw-bg-blue-500",
+      "tw-bg-emerald-500",
+      "tw-bg-amber-500",
+      "tw-bg-violet-500",
+      "tw-bg-rose-500",
+    ];
+
+    function updateValues() {
+      let decimalValue = 0;
+      let binaryValue = "";
+
+      switches.forEach((checkbox, index) => {
+        if (checkbox.checked) {
+          decimalValue += Math.pow(2, index);
+          binaryValue = "1" + binaryValue;
+
+          const digitElement = digits[7 - index];
+          digitElement.textContent = "1";
+          digitElement.classList.add(settingColors[index], "tw-text-white");
+        } else {
+          binaryValue = "0" + binaryValue;
+          const digitElement = digits[7 - index];
+          digitElement.textContent = "0";
+          digitElement.classList.remove(settingColors[index], "tw-text-white");
+        }
+      });
+
+      decimalValueElement.textContent = decimalValue;
+      binaryValueElement.textContent = binaryValue;
+
+      // Update the active settings container
+      const activeSettings = getActiveSettings(decimalValue);
+      if (activeSettings.length > 0) {
+        activeSettingsContainer.classList.remove("tw-hidden");
+        activeSettingsContainer.classList.add("tw-flex");
+      } else {
+        activeSettingsContainer.classList.add("tw-hidden");
+        activeSettingsContainer.classList.remove("tw-flex");
+      }
+
+      activeSettingsContainer.innerHTML = "";
+      activeSettings.reverse().forEach((setting) => {
+        const settingElement = document.createElement("span");
+        settingElement.className = `tw-inline-block tw-rounded-sm ${settingColors[setting.index]} tw-text-white tw-px-2 tw-py-1 tw-text-xs tw-font-semibold`;
+        settingElement.textContent = setting.name;
+        activeSettingsContainer.appendChild(settingElement);
+      });
+    }
+
+    function getActiveSettings(configMask) {
+      const editorSettingAction = {
+        autoSave: 1 << 0,
+        formatOnType: 1 << 1,
+        wordWrap: 1 << 2,
+        showLines: 1 << 3,
+        minimapEnabled: 1 << 4,
+      };
+
+      const settingNames = {
+        [editorSettingAction.autoSave]: "Auto Save",
+        [editorSettingAction.formatOnType]: "Format on Type",
+        [editorSettingAction.wordWrap]: "Word Wrap",
+        [editorSettingAction.showLines]: "Show Line Numbers",
+        [editorSettingAction.minimapEnabled]: "Minimap Enabled",
+      };
+
+      const activeSettings = [];
+
+      for (const [flagString, name] of Object.entries(settingNames)) {
+        const flag = Number(flagString);
+
+        // Check if the current flag exists within the mask
+        if ((configMask & flag) === flag) {
+          activeSettings.push({ name, index: Math.log2(flag) });
+        }
+      }
+
+      return activeSettings;
+    }
+  });
+</script>
