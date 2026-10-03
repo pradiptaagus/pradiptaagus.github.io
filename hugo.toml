@@ -11,6 +11,10 @@ enableEmoji = true
     style = 'catppuccin-mocha'
     noClasses = true
 
+[markup.goldmark]
+  [markup.goldmark.renderer]
+    unsafe = true
+
 [sitemap]
   changefreq = 'monthly'
   priority = 0.8

@@ -2,7 +2,7 @@
   "scripts": {
     "build:css": "tailwindcss -i assets/css/tailwind.css -o static/css/tailwind.css --minify",
     "dev:css": "tailwindcss -i assets/css/tailwind.css -o static/css/tailwind.css --watch",
-    "dev": "npm run build:css && concurrently \"npm run dev:css\" \"hugo server -D --noBuildLock --baseURL http://localhost:1313/\""
+    "dev": "npm run build:css && concurrently \"npm run dev:css\" \"hugo server -D --noBuildLock --buildFuture --baseURL http://localhost:1313/\""
   },
   "name": "portfolio",
   "private": true,
