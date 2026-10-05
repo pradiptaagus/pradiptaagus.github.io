@@ -1,12 +1,12 @@
 <div
-  class="bitwise-state-manager tw-flex tw-flex-col tw-gap-10 tw-items-center tw-p-4 tw-text-white tw-bg-[#1c1d21] dark:tw-bg-[#2e2e33] tw-rounded"
+  class="bitwise-state-manager tw-flex tw-flex-col tw-gap-10 tw-items-center tw-py-4 tw-px-2 md:tw-px-4 md:tw-py-5 tw-text-white tw-bg-[#1c1d21] dark:tw-bg-[#2e2e33] tw-rounded"
 >
   <h2 class="tw-text-xl tw-text-center tw-font-bold !tw-m-0 tw-text-inherit">
     Bitwise State Manager
   </h2>
   <!-- Input Flags -->
   <div
-    class="tw-flex tw-flex-row tw-flex-nowrap tw-gap-1 tw-justify-center"
+    class="tw-flex tw-flex-row tw-flex-nowrap tw-gap-0.5 md:tw-gap-1 tw-justify-center"
     id="bitwise-flags"
   ></div>
 
@@ -18,7 +18,7 @@
 
   <!-- Readable Value -->
   <div
-    class="tw-flex tw-items-stretch tw-flex-row tw-gap-20 tw-justify-between tw-flex-nowrap"
+    class="tw-flex tw-items-stretch tw-flex-row tw-gap-10 md:tw-gap-20 tw-justify-between tw-flex-nowrap"
   >
     <div class="tw-flex tw-flex-col tw-items-center tw-flex-1">
       <small class="tw-text-sm tw-text-nowrap">Decimal Value</small>
@@ -29,13 +29,16 @@
     ></div>
     <div class="tw-flex tw-flex-col tw-items-center tw-flex-1">
       <small class="tw-text-sm tw-text-nowrap">Binary Value</small>
-      <span class="binary-value tw-text-lg tw-font-semibold">00000000</span>
+      <span
+        class="binary-value tw-text-lg tw-font-semibold tw-inline-block tw-w-fit tw-text-nowrap"
+        >00000000</span
+      >
     </div>
   </div>
 
   <!-- Swtches -->
   <div
-    class="tw-grid tw-grid-cols-2 tw-gap-x-20 tw-gap-y-5"
+    class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 md:tw-gap-x-20 tw-gap-y-5 tw-w-full md:tw-w-fit"
     id="switches"
   ></div>
 </div>
@@ -62,7 +65,7 @@
           "tw-flex tw-flex-col tw-gap-0.5 tw-items-center tw-w-10";
         const digitDiv = document.createElement("div");
         digitDiv.className =
-          "digit tw-border-2 tw-border-solid tw-border-gray-700 dark:tw-border-gray-50 tw-rounded tw-w-10 tw-h-10 tw-flex tw-justify-center tw-items-center tw-text-base";
+          "digit tw-border md:tw-border-2 tw-border-solid tw-border-gray-700 dark:tw-border-gray-50 tw-rounded tw-w-9 md:tw-w-10 tw-h-9 md:tw-h-10 tw-flex tw-justify-center tw-items-center tw-text-base";
         digitDiv.textContent = "0";
         const smallLabel = document.createElement("small");
         smallLabel.className =
@@ -86,14 +89,15 @@
           "tw-flex tw-flex-row tw-justify-start tw-items-center tw-gap-2";
 
         const label = document.createElement("label");
-        label.className = "tw-text-sm tw-font-semibold tw-select-none";
+        label.className =
+          "tw-text-sm tw-font-semibold tw-select-none tw-text-nowrap";
         label.setAttribute("for", `bitwise-state-manager-switch-${i + 1}`);
         label.textContent = `${actions[i]} (${i})`;
 
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.id = `bitwise-state-manager-switch-${i + 1}`;
-        checkbox.className = "tw-w-5 tw-h-5";
+        checkbox.className = "tw-w-5 tw-h-5 tw-grow-0 tw-shrink-0";
         checkbox.addEventListener("change", updateValues);
 
         switchDiv.appendChild(checkbox);
@@ -142,6 +146,8 @@
           digitElement.classList.remove(settingColors[index], "tw-text-white");
         }
       });
+
+      binaryValue = binaryValue.padStart(8, "0");
 
       decimalValueElement.textContent = decimalValue;
       binaryValueElement.textContent = binaryValue;

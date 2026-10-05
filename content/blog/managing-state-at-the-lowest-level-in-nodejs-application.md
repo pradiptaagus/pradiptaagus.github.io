@@ -6,6 +6,7 @@ publishDate = '2026-10-02'
 draft = false
 categories = ["article"]
 tags = ["frontend", "backend", "performance", "typescript", "javascript", "Node.js"]
+images = ['images/blog/bitwise-state-manager.png']
 
 [cover]
   image = 'images/blog/bitwise-state-manager.png'
@@ -44,7 +45,7 @@ It is easy to claim bitwise are faster, but understanding _why_ requires looking
 
 If you benchmark an array of 10,000,000 boolean objects against an array of 10,000,000 bitmask integers in Node.js, the boolean array will typically consume largest memory compared to bitmask integers.
 
-Every time you add a boolean property to an object (`{ a: true, b: false }`), V8 creates a "Hidden Class" to map those properties. A bitmask integer, however, is stored as a **Smi (Small Integer)**. V8 highly optimizes small integers (`smis`), storing them directly in the pointer space without allocating _any_ extra bytes on the heap.
+Every time you add a boolean property to an object (`{ a: true, b: false }`), V8 creates a "Hidden Class" to map those properties. A bitmask integer, however, is stored as a **smis (small integers)**. V8 highly optimizes small integers (`smis`), storing them directly in the pointer space without allocating _any_ extra bytes on the heap.
 
 ### 2. CPU Speed (The Micro View)
 
@@ -55,7 +56,7 @@ If you generate a massive array of 10,000,000 simulated items and run a strict b
 This massive speedup happens for two hardware-level reasons:
 
 - **Memory Locality:** A packed array of small integers (`smis`) can be loaded efficiently into the CPU's L1/L2 cache in contiguous chunks, meaning the processor doesn't have to wait to fetch data. Object arrays require the CPU to constantly jump around heap memory to find the actual boolean values.
-- **Fewer Instructions:** Checking `item.autoSave` && `item.wordWrap` forces the engine to look up two separate property addresses in memory, evaluate the first, branch, evaluate the second, and branch again. The bitwise check (flags & 5) === 5 is evaluated in a single clock cycle directly on a CPU register.
+- **Fewer Instructions:** Checking `item.autoSave` && `item.wordWrap` forces the engine to look up two separate property addresses in memory, evaluate the first, branch, evaluate the second, and branch again. The bitwise check `(flags & 5) === 5` is evaluated in a single clock cycle directly on a CPU register.
 
 ---
 
@@ -74,7 +75,7 @@ Here are the standard bitwise operators used in most programming languages:
 
 Bellow is a interactive bitwise calculator to help you understand exatcly how the bits are flipping.
 
-# {{<bitwise-flag-calculator>}}
+{{<bitwise-flag-calculator>}}
 
 ## Implementation
 
@@ -155,7 +156,7 @@ console.log(getActiveSettings(currentConfig));
 
 You can use the playground bellow for state management using bitwise.
 
-# {{<bitwise-state-manager>}}
+{{<bitwise-state-manager>}}
 
 ---
 
@@ -431,7 +432,7 @@ Benchmark: Boolean
 │ 10      │ 'Heap Used Delta (MB)'     │ 802.5500183105469    │
 │ 11      │ 'External Start (MB)'      │ 11.176488876342773   │
 │ 12      │ 'External End (MB)'        │ 1.6397838592529297   │
-│ 13      │ 'External Delta (MB)'      │ 0                    │
+│ 13      │ 'External Delta (MB)'      │ -9.536705017089844   │
 │ 14      │ 'Array Buffers Start (MB)' │ 0.010157585144042969 │
 │ 15      │ 'Array Buffers End (MB)'   │ 0.010157585144042969 │
 │ 16      │ 'Array Buffers Delta (MB)' │ 0                    │
@@ -470,31 +471,43 @@ The bitwise approach is approximately 2.4 times faster than the boolean approach
 
 - **Bitwise (527.97 ms):** The engine bypasses object property lookups entirely. It loads integers directly into the CPU registers and executes a single hardware-level bitwise & instruction per item.
 
-#### Process Footprint (RSS)
+#### Process Footprint (`rss`)
 
-The Resident Set Size (RSS) delta shows the impact on the operating system's actual RAM allocation.
+The Resident Set Size (`rss`) delta shows the impact on the operating system's actual RAM allocation.
 
-- **Boolean RSS Delta (146.65 MB):** As the heap ballooned by 800 MB, the Node.js process had to claim an additional 146 MB of physical RAM from the OS to maintain its operations.
+- **Boolean `rss` Delta (146.65 MB):** As the heap ballooned by 800 MB, the Node.js process had to claim an additional 146 MB of physical RAM from the OS to maintain its operations.
 
-- **Bitwise RSS Delta (0 MB):** The bitwise execution was so efficient that the overall physical footprint of the Node.js process did not grow at all during the 10 million iterations.
+- **Bitwise `rss` Delta (0 MB):** The bitwise execution was so efficient that the overall physical footprint of the Node.js process did not grow at all during the 10 million iterations.
 
 #### Heap Memory Allocation
 
 This is where the structural difference is most visible, demonstrating the massive overhead of standard JavaScript objects.
 
-- **Boolean Heap Used Delta (802.55 MB):** Pushing 10 million simple objects (e.g., { autoSave: true }) onto a standard array forces V8 to allocate over 800 megabytes of memory. This includes the memory for the boolean primitives themselves, plus the hidden class metadata, prototype pointers, and hash map structures required to maintain the array and objects.
+- **Boolean Heap Used Delta (802.55 MB):** Pushing 10 million simple objects (e.g., `{ autoSave: true }`) onto a standard array forces V8 to allocate over 800 MB of memory. This includes the memory for the boolean primitives themselves, plus the hidden class metadata, prototype pointers, and hash map structures required to maintain the array and objects.
 
-- **Bitwise Heap Used Delta (7.88 MB):** The bitwise approach barely touches the V8 JavaScript heap. V8 highly optimizes Small Integers (Smis), meaning the numeric flags themselves require zero additional heap allocation.
+- **Bitwise Heap Used Delta (7.88 MB):** The bitwise approach barely touches the V8 JavaScript heap. V8 highly optimizes small integers (`smis`), meaning the numeric flags themselves require zero additional heap allocation.
 
 #### External Memory and Array Buffers
 
-Rows 11 through 16 reveal exactly how the bitwise benchmark stores its data to achieve such a small heap footprint.
+The External Delta measures the change in memory allocated outside of V8's standard JavaScript heap during the benchmark's execution. In Node.js, this external memory is managed directly by underlying C++ bindings and is primarily used for storing raw binary data structures such as `ArrayBuffer`, `Buffer`, and `TypedArray`.
 
-- **The 10 Million Byte Array:** In the Bitwise table, the Array Buffers Delta and External Delta are both exactly 9.53674 MB. Because 1 megabyte is 1,048,576 bytes, 9.53674 MB translates to exactly 10,000,000 bytes. This confirms the bitwise test stored its 10 million flags inside a tightly packed Uint8Array or Buffer.
+##### The Bitwise Benchmark (+9.53 MB)
 
-- **Bypassing the Heap:** Because a TypedArray allocates a single, contiguous block of raw memory via C++, Node.js categorizes it as External/Array Buffer memory rather than Heap memory.
+In the Bitwise results, both the External Delta and the Array Buffers Delta increased by precisely 9.5367431640625 MB.
 
-- **The Boolean Artifact:** In the Boolean table, External Start is 11.17 MB, but External End drops to 1.63 MB. The script logged the delta as 0 (likely preventing negative numbers in the display), but a 9.5 MB chunk of external memory was destroyed during the boolean test. This indicates the 10 MB TypedArray from a warm-up phase was finally garbage-collected mid-execution while the boolean test was running.
+- **The 10 Million Byte Allocation:** Because 1 Megabyte equals 1,048,576 bytes, 9.53674 MB equates to exactly 10,000,000 bytes. This confirms that the Bitwise implementation stored its 10 million boolean states inside a single, tightly packed `Uint8Array` or native `Buffer`.
+
+- **Bypassing the Heap:** Because the data was stored as contiguous raw bytes in C++, it completely bypassed the V8 JavaScript heap. This is why the Heap Used Delta for the Bitwise test remained at a negligible 7.88 MB.
+
+##### The Boolean Benchmark (-9.53 MB)
+
+The Boolean results show a negative External Delta of -9.536705017089844 MB. This negative value does not mean boolean logic generates free memory; it is a side effect of extreme memory pressure triggering the V8 Garbage Collector.
+
+- **The 800 MB Panic:** The Boolean implementation relied on standard JavaScript objects (e.g., `{ autoSave: true }`). Pushing 10 million of these objects onto an array forced the V8 engine to allocate over 800 MB on the JavaScript heap (as seen in the Heap Used Delta).
+
+- **Emergency Sweeping:** This massive, rapid allocation caused severe memory pressure. To prevent the process from crashing, V8 was forced to run an aggressive garbage collection sweep while the benchmark was executing.
+
+- **The Math:** During this sweep, V8 found and destroyed the exact 10 MB ArrayBuffer left over from a previous run or warm-up phase. Because the benchmark script recorded 11.17 MB of external memory before the test and only 1.63 MB after the test, the mathematical difference resulted in the -9.53 MB delta.
 
 #### Data Integrity (Match Count)
 
