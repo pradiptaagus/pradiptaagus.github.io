@@ -13,7 +13,7 @@
 {{- end }}
 
 <head>
-    {{- partial "head.html" . }}
+    {{- partialCached "head.html" . }}
 </head>
 
 {{- if (or (ne .Kind `page` ) (eq .Layout `archives`) (eq .Layout `search`)) }}
