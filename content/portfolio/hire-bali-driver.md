@@ -8,7 +8,7 @@ hideMeta = true
 tags = ['go', 'svelte', 'typescript']
 
 [cover]
-  image = 'images/hire-bali-driver-screenshot.png'
+  image = 'images/portfolio/hire-bali-driver-screenshot.png'
   alt = 'Hire Bali Driver tour booking platform schedule management screenshot'
 +++
 

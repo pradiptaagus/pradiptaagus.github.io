@@ -8,7 +8,7 @@ hideMeta = true
 tags = ['react-native', 'kotlin', 'java', 'android']
 
 [cover]
-  image = 'images/senyum-screenshot.png'
+  image = 'images/portfolio/senyum-screenshot.png'
   alt = 'SenyuM Mobile BRI cross-selling ecosystem app screenshot'
 +++
 

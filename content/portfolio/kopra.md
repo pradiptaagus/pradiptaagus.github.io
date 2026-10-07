@@ -8,7 +8,7 @@ hideMeta = true
 tags = ['angular', 'micro-frontend', 'banking', 'typescript']
 
 [cover]
-  image = 'images/kopra-screenshot.png'
+  image = 'images/portfolio/kopra-screenshot.png'
   alt = 'Kopra Wholesale Digital Super Platform dashboard screenshot'
 +++
 
