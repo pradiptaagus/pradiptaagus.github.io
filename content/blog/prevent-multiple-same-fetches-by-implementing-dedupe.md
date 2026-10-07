@@ -5,15 +5,43 @@ date = '2026-08-11'
 draft = false
 categories = ['article']
 tags = ['frontend', 'performance', 'typescript', 'javascript']
+image = 'images/blog/dedupe-fetch.png'
 
 [cover]
-  image = 'images/blog/fetch-dedupe.png'
-  alt = 'Fetch deduplication'
+  mermaid = """
+    flowchart TD
+      classDef topCard fill:#2e2e33,stroke:#10b981,stroke-width:2px,color:#f8fafc,filter:none;
+      classDef codeBox fill:#2e2e33,stroke:#e2e2e2,stroke-width:2px,color:#e3e3e3,filter:none;
+      classDef greenCard fill:#2e2e33,stroke:#10b981,stroke-width:2px,color:#f8fafc,filter:none;
+      classDef blueCard fill:#2e2e33,stroke:#3b82f6,stroke-width:2px,color:#f8fafc,filter:none;
+      classDef purpleCard fill:#2e2e33,stroke:#8b5cf6,stroke-width:2px,color:#f8fafc,filter:none;
+      classDef titleStyle fill:none,stroke:none;
+
+      linkStyle default filter:none,stroke-width:2px;
+
+      title("<div style='width: 700px; text-align: center;'><div style='font-size: 28px; font-weight: 600; color: rgba(255, 255, 255, 1);'>Prevent Duplicate Fetches</div><div style='font-size: 16px; color: rgba(148, 163, 184, 1); margin-top: 4px;'>Three callers, one network request — via in-flight deduplication</div></div>"):::titleStyle
+
+      server("<div style='width: 250px; text-align: center;'><div style='color: rgba(227, 227, 227, 1); font-size: 18px; font-weight: 600;'>API Server</div></div>"):::codeBox
+
+      dedupe("<div style='width: 400px; text-align: center;'><div style='color: rgba(227, 227, 227, 1); font-size: 18px; font-weight: 600;'>dedupe()</div><div style='color: rgba(148, 163, 184, 1); font-family: monospace; font-size: 14px; margin-top: 8px;'>Map&lt;key, Promise&gt;</div><div style='background-color: #1e1e24; color: #e2e2e2; margin-top: 8px;'><span style="font-family: monospace">&quot;GET:/api/me:&quot;</span> &rarr; shared promise</div><div style='color: rgba(227, 227, 227, 1); font-size: 12px; font-family: inherit; margin-top: 8px;'>same key &rarr; return existing promise</div></div>"):::greenCard
+
+      caller1("<div style='width: 190px; text-align: center;'><div style='color: rgba(227, 227, 227, 1); font-size: 18px; font-weight: 600;'>&lt;Header /&gt;</div><div style='color: rgba(227, 227, 227, 1); font-family: monospace; font-size: 14px; margin-top: 8px;'>GET /api/me</div></div>"):::blueCard
+
+      caller2("<div style='width: 190px; text-align: center;'><div style='color: rgba(227, 227, 227, 1); font-size: 18px; font-weight: 600;'>&lt;Sidebar /&gt;</div><div style='color: rgba(227, 227, 227, 1); font-family: monospace; font-size: 14px; margin-top: 8px;'>GET /api/me</div></div>"):::purpleCard
+
+      caller3("<div style='width: 190px; text-align: center;'><div style='color: rgba(227, 227, 227, 1); font-size: 18px; font-weight: 600;'>&lt;Activity /&gt;</div><div style='color: rgba(227, 227, 227, 1); font-family: monospace; font-size: 14px; margin-top: 8px;'>GET /api/me</div></div>"):::greenCard
+
+      title ~~~ server
+      server -->|"<div style='color: rgba(16, 185, 129, 1); font-weight: bold; padding: 4px;'>1 request</div>"| dedupe
+      dedupe --> caller1
+      dedupe --> caller2
+      dedupe --> caller3
+  """
 +++
 
 Have you ever opened your browser's network tab and seen the same API request fired five times, one after another, all in the same second? You did not click anything five times. The requests came from five different components that all mounted at once and all needed the same data.
 
-This is the classic *duplicate fetch* problem, and the fix is a small, well-tested technique called **request deduplication**. It collapses identical in-flight requests into a single shared promise, so the browser only ever sends one network call.
+This is the classic _duplicate fetch_ problem, and the fix is a small, well-tested technique called **request deduplication**. It collapses identical in-flight requests into a single shared promise, so the browser only ever sends one network call.
 
 ## The Problem: N Components, One Resource
 
@@ -22,8 +50,10 @@ Imagine a dashboard page. The header shows the current user, the sidebar shows t
 ```tsx
 // Each component does this independently
 useEffect(() => {
-  fetch('/api/me').then((res) => res.json()).then(setUser)
-}, [])
+  fetch("/api/me")
+    .then((res) => res.json())
+    .then(setUser);
+}, []);
 ```
 
 Three mounts, three identical requests, three network round trips — for the exact same data. Now multiply that by every user with a slow connection, and you have wasted bandwidth, unnecessary load on your API server, and a higher chance of hitting rate limits.
@@ -36,25 +66,25 @@ This pattern shows up everywhere:
 
 ## What Deduplication Is (and Is Not)
 
-**Deduplication** means: while a request with the same key is already *in flight*, any new caller gets the same promise instead of starting a second request.
+**Deduplication** means: while a request with the same key is already _in flight_, any new caller gets the same promise instead of starting a second request.
 
 ```tsx
 // Before: three callers -> three requests
-fetchA()
-fetchB()
-fetchC()
+fetchA();
+fetchB();
+fetchC();
 
 // After: three callers -> one request, three of the same result
-const p = dedupedFetch('/api/me')
-const a = await p
-const b = await p
-const c = await p
+const p = dedupedFetch("/api/me");
+const a = await p;
+const b = await p;
+const c = await p;
 ```
 
 It is important to distinguish deduplication from **caching**:
 
-- **Caching** stores a *completed* response and reuses it for later requests. If a request fails, a cache might serve a stale value or nothing at all.
-- **Deduplication** only merges requests that are *currently pending*. As soon as the request settles, the dedupe entry is removed, so every new call is a fresh request.
+- **Caching** stores a _completed_ response and reuses it for later requests. If a request fails, a cache might serve a stale value or nothing at all.
+- **Deduplication** only merges requests that are _currently pending_. As soon as the request settles, the dedupe entry is removed, so every new call is a fresh request.
 
 They are complementary. Dedupe saves you from concurrent duplicates; a cache saves you from repeat visits. You can even layer both: dedupe the in-flight window, then cache the result for a short TTL.
 
@@ -94,9 +124,9 @@ Wrap it inside your API client, so callers do not even know dedupe exists:
 ```ts
 // api.ts
 export const api = {
-  me: () => dedupedFetch('/api/me').then((r) => r.json()),
-  posts: () => dedupedFetch('/api/posts').then((r) => r.json()),
-}
+  me: () => dedupedFetch("/api/me").then((r) => r.json()),
+  posts: () => dedupedFetch("/api/posts").then((r) => r.json()),
+};
 ```
 
 ## Why It Matters
@@ -123,30 +153,33 @@ When a caller asks for `/api/me`, you compute the key. If the key is already in 
 Here is a complete, production-ready TypeScript wrapper:
 
 ```ts
-const pending = new Map<string, Promise<Response>>()
+const pending = new Map<string, Promise<Response>>();
 
 function getKey(input: string | URL | Request, init?: RequestInit): string {
-  const url = typeof input === 'string' ? input : input.url
-  const method = init?.method ?? 'GET'
-  const body = typeof init?.body === 'string' ? init.body : JSON.stringify(init?.body ?? '')
-  return `${method}:${url}:${body}`
+  const url = typeof input === "string" ? input : input.url;
+  const method = init?.method ?? "GET";
+  const body =
+    typeof init?.body === "string"
+      ? init.body
+      : JSON.stringify(init?.body ?? "");
+  return `${method}:${url}:${body}`;
 }
 
 export async function dedupedFetch(
   input: string | URL | Request,
   init?: RequestInit,
 ): Promise<Response> {
-  const key = getKey(input, init)
+  const key = getKey(input, init);
 
-  const existing = pending.get(key)
-  if (existing) return existing
+  const existing = pending.get(key);
+  if (existing) return existing;
 
   const promise = fetch(input, init).finally(() => {
-    pending.delete(key)
-  })
+    pending.delete(key);
+  });
 
-  pending.set(key, promise)
-  return promise
+  pending.set(key, promise);
+  return promise;
 }
 ```
 
@@ -158,10 +191,13 @@ The key must capture everything that makes a request "the same":
 
 ```ts
 function getKey(input: string | URL | Request, init?: RequestInit): string {
-  const url = typeof input === 'string' ? input : input.url
-  const method = init?.method ?? 'GET'
-  const body = typeof init?.body === 'string' ? init.body : JSON.stringify(init?.body ?? '')
-  return `${method}:${url}:${body}`
+  const url = typeof input === "string" ? input : input.url;
+  const method = init?.method ?? "GET";
+  const body =
+    typeof init?.body === "string"
+      ? init.body
+      : JSON.stringify(init?.body ?? "");
+  return `${method}:${url}:${body}`;
 }
 ```
 
@@ -171,11 +207,11 @@ If you omit the method, `GET` and `POST` to the same URL would collide. If you o
 
 ```ts
 const promise = fetch(input, init).finally(() => {
-  pending.delete(key)
-})
+  pending.delete(key);
+});
 
-pending.set(key, promise)
-return promise
+pending.set(key, promise);
+return promise;
 ```
 
 The key detail is that you store the **same promise object** that you return. All concurrent callers `await` one and the same promise, so there is exactly one `fetch` on the wire.
@@ -188,43 +224,46 @@ Using `.finally()` means the map entry is removed whether the request **resolves
 
 ```ts
 // Three components, three callers — one network request.
-const [me, setMe] = useState<User | null>(null)
+const [me, setMe] = useState<User | null>(null);
 
 useEffect(() => {
-  api.me().then(setMe)
-}, [])
+  api.me().then(setMe);
+}, []);
 ```
 
 If three instances of this component mount in the same tick, `dedupedFetch` returns the same promise to all three, and only one `GET /api/me` leaves the browser.
 
 ## Going Further: TTL Caching
 
-Dedupe only merges *in-flight* requests. If you also want to reuse *completed* responses, add a short time-to-live. This gives you the best of both worlds: no concurrent duplicates, and no repeat fetches for rapid revisit.
+Dedupe only merges _in-flight_ requests. If you also want to reuse _completed_ responses, add a short time-to-live. This gives you the best of both worlds: no concurrent duplicates, and no repeat fetches for rapid revisit.
 
 ```ts
-const cache = new Map<string, { promise: Promise<Response>; expiresAt: number }>()
+const cache = new Map<
+  string,
+  { promise: Promise<Response>; expiresAt: number }
+>();
 
 export async function dedupedFetchWithTTL(
   input: string | URL | Request,
   init?: RequestInit,
   ttlMs = 5_000,
 ): Promise<Response> {
-  const key = getKey(input, init)
-  const now = Date.now()
+  const key = getKey(input, init);
+  const now = Date.now();
 
-  const hit = cache.get(key)
-  if (hit && hit.expiresAt > now) return hit.promise
+  const hit = cache.get(key);
+  if (hit && hit.expiresAt > now) return hit.promise;
 
   const entry = {
     promise: fetch(input, init).finally(() => {
       // keep in cache until TTL expires, but drop immediately on error
-      cache.delete(key)
+      cache.delete(key);
     }),
     expiresAt: now + ttlMs,
-  }
+  };
 
-  cache.set(key, entry)
-  return entry.promise
+  cache.set(key, entry);
+  return entry.promise;
 }
 ```
 
@@ -233,45 +272,48 @@ export async function dedupedFetchWithTTL(
 The wrapper approach above requires every call site to use `dedupedFetch`. If you cannot touch the call sites — for example, third-party libraries or legacy code that call `fetch` directly — you can monkey-patch `fetch` itself so the dedupe logic runs on every request automatically.
 
 ```ts
-const originalFetch = window.fetch.bind(window)
-const pending = new Map<string, Promise<Response>>()
+const originalFetch = window.fetch.bind(window);
+const pending = new Map<string, Promise<Response>>();
 
 function getKey(input: string | URL | Request, init?: RequestInit): string {
-  const url = typeof input === 'string' ? input : input.url
-  const method = init?.method ?? 'GET'
-  const body = typeof init?.body === 'string' ? init.body : JSON.stringify(init?.body ?? '')
-  return `${method}:${url}:${body}`
+  const url = typeof input === "string" ? input : input.url;
+  const method = init?.method ?? "GET";
+  const body =
+    typeof init?.body === "string"
+      ? init.body
+      : JSON.stringify(init?.body ?? "");
+  return `${method}:${url}:${body}`;
 }
 
 window.fetch = async (input, init) => {
-  const key = getKey(input, init)
+  const key = getKey(input, init);
 
-  const existing = pending.get(key)
-  if (existing) return existing
+  const existing = pending.get(key);
+  if (existing) return existing;
 
-  const promise = originalFetch(input, init).finally(() => pending.delete(key))
-  pending.set(key, promise)
-  return promise
-}
+  const promise = originalFetch(input, init).finally(() => pending.delete(key));
+  pending.set(key, promise);
+  return promise;
+};
 ```
 
-Because this wraps *every* `fetch` in the app, it also intercepts mutations. You almost never want to dedupe side-effecting requests, so guard the patch to only dedupe idempotent methods:
+Because this wraps _every_ `fetch` in the app, it also intercepts mutations. You almost never want to dedupe side-effecting requests, so guard the patch to only dedupe idempotent methods:
 
 ```ts
 window.fetch = async (input, init) => {
-  const method = init?.method ?? 'GET'
-  if (method !== 'GET' && method !== 'HEAD') {
-    return originalFetch(input, init)
+  const method = init?.method ?? "GET";
+  if (method !== "GET" && method !== "HEAD") {
+    return originalFetch(input, init);
   }
 
-  const key = getKey(input, init)
-  const existing = pending.get(key)
-  if (existing) return existing
+  const key = getKey(input, init);
+  const existing = pending.get(key);
+  if (existing) return existing;
 
-  const promise = originalFetch(input, init).finally(() => pending.delete(key))
-  pending.set(key, promise)
-  return promise
-}
+  const promise = originalFetch(input, init).finally(() => pending.delete(key));
+  pending.set(key, promise);
+  return promise;
+};
 ```
 
 Caveats to keep in mind:
@@ -288,34 +330,40 @@ Here is a complete, production-ready module that combines every enhancement disc
 
 ```ts
 interface DedupeOptions {
-  ttlMs?: number            // reuse completed responses for this long (0 = dedupe only, no caching)
-  bypass?: boolean          // skip dedupe + cache entirely, always hit the network
-  includeHeaders?: string[] // header names to fold into the key so such requests don't merge
+  ttlMs?: number; // reuse completed responses for this long (0 = dedupe only, no caching)
+  bypass?: boolean; // skip dedupe + cache entirely, always hit the network
+  includeHeaders?: string[]; // header names to fold into the key so such requests don't merge
 }
 
-const pending = new Map<string, Promise<Response>>()
-const cache = new Map<string, { promise: Promise<Response>; expiresAt: number }>()
+const pending = new Map<string, Promise<Response>>();
+const cache = new Map<
+  string,
+  { promise: Promise<Response>; expiresAt: number }
+>();
 
 function getKey(
   input: string | URL | Request,
   init?: RequestInit,
   includeHeaders: string[] = [],
 ): string {
-  const url = typeof input === 'string' ? input : input.url
-  const method = init?.method ?? 'GET'
-  const body = typeof init?.body === 'string' ? init.body : JSON.stringify(init?.body ?? '')
+  const url = typeof input === "string" ? input : input.url;
+  const method = init?.method ?? "GET";
+  const body =
+    typeof init?.body === "string"
+      ? init.body
+      : JSON.stringify(init?.body ?? "");
   const headers = includeHeaders
     .map((name) => {
-      const value = new Headers(init?.headers).get(name)
-      return value ? `${name}:${value}` : ''
+      const value = new Headers(init?.headers).get(name);
+      return value ? `${name}:${value}` : "";
     })
     .filter(Boolean)
-    .join(';')
-  return `${method}:${url}:${body}:${headers}`
+    .join(";");
+  return `${method}:${url}:${body}:${headers}`;
 }
 
 function isIdempotent(method?: string): boolean {
-  return method === 'GET' || method === 'HEAD' || method === 'OPTIONS'
+  return method === "GET" || method === "HEAD" || method === "OPTIONS";
 }
 
 export function dedupedFetch(
@@ -323,35 +371,35 @@ export function dedupedFetch(
   init?: RequestInit,
   { ttlMs = 0, bypass = false, includeHeaders = [] }: DedupeOptions = {},
 ): Promise<Response> {
-  const method = init?.method ?? 'GET'
+  const method = init?.method ?? "GET";
 
   // Side-effecting requests are never deduped or cached.
-  if (!isIdempotent(method)) return fetch(input, init)
+  if (!isIdempotent(method)) return fetch(input, init);
 
-  const key = getKey(input, init, includeHeaders)
-  const now = Date.now()
+  const key = getKey(input, init, includeHeaders);
+  const now = Date.now();
 
   // 1. In-flight dedupe — someone else is already fetching this key.
-  const inFlight = pending.get(key)
-  if (inFlight) return inFlight
+  const inFlight = pending.get(key);
+  if (inFlight) return inFlight;
 
   // 2. Completed response still within its TTL.
   if (!bypass && ttlMs > 0) {
-    const hit = cache.get(key)
-    if (hit && hit.expiresAt > now) return hit.promise
+    const hit = cache.get(key);
+    if (hit && hit.expiresAt > now) return hit.promise;
   }
 
   // 3. Fresh request — store it, then clean up on settle.
-  const promise = fetch(input, init).finally(() => pending.delete(key))
+  const promise = fetch(input, init).finally(() => pending.delete(key));
 
-  pending.set(key, promise)
+  pending.set(key, promise);
 
   if (ttlMs > 0) {
-    promise.catch(() => cache.delete(key))
-    cache.set(key, { promise, expiresAt: now + ttlMs })
+    promise.catch(() => cache.delete(key));
+    cache.set(key, { promise, expiresAt: now + ttlMs });
   }
 
-  return promise
+  return promise;
 }
 ```
 
@@ -359,16 +407,16 @@ Usage:
 
 ```ts
 // Dedupe concurrent in-flight requests, no caching.
-api.me()
+api.me();
 
 // Dedupe + reuse completed responses for 30 seconds.
-api.me({ ttlMs: 30_000 })
+api.me({ ttlMs: 30_000 });
 
 // Skip dedupe and cache entirely — always fresh.
-api.me({ bypass: true })
+api.me({ bypass: true });
 
 // Keep requests with different locales from merging into one.
-api.profile({ includeHeaders: ['Accept-Language'] })
+api.profile({ includeHeaders: ["Accept-Language"] });
 ```
 
 The order of checks matters. The in-flight map is consulted first so concurrent callers share one promise, then the cache serves warm responses, and only a true miss hits the network. Mutations pass straight through untouched, and `bypass` lets any caller force a fresh request when stale data would be worse than a duplicate.
@@ -380,10 +428,10 @@ Dedupe is simple, but the edge cases are where bugs hide:
 - **Always-fresh data.** If a caller explicitly needs a fresh response, let it bypass dedupe:
   ```ts
   export async function dedupedFetch(input, init, { bypass = false } = {}) {
-    const key = getKey(input, init)
+    const key = getKey(input, init);
     if (!bypass) {
-      const existing = pending.get(key)
-      if (existing) return existing
+      const existing = pending.get(key);
+      if (existing) return existing;
     }
     // ...
   }
@@ -404,10 +452,10 @@ A simple mental model: if two calls to the same request are indistinguishable an
 
 Duplicate fetches are a silent waste of bandwidth, server resources, and rate-limit quota. Deduplication fixes the root cause by sharing a single in-flight promise across all callers of an identical request.
 
-| Problem | Symptom | Dedupe |
-|---------|---------|--------|
-| Five components fetch `/api/me` at mount | Five identical network calls | One promise, one request |
-| Debounced search fires overlapping queries | Duplicate query results | Identical keys merge |
-| Failed request retried by siblings | Stale promise blackout | `.finally()` cleans up on error |
+| Problem                                    | Symptom                      | Dedupe                          |
+| ------------------------------------------ | ---------------------------- | ------------------------------- |
+| Five components fetch `/api/me` at mount   | Five identical network calls | One promise, one request        |
+| Debounced search fires overlapping queries | Duplicate query results      | Identical keys merge            |
+| Failed request retried by siblings         | Stale promise blackout       | `.finally()` cleans up on error |
 
 The whole technique fits in a `Map`, a key function, and a `finally`. It is a small investment with outsized returns — fewer requests, happier servers, and a network tab you can actually read.

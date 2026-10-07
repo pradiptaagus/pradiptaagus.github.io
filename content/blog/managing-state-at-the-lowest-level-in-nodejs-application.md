@@ -6,11 +6,10 @@ publishDate = '2026-10-02'
 draft = false
 categories = ["article"]
 tags = ["frontend", "backend", "performance", "typescript", "javascript", "Node.js"]
-images = ['images/blog/bitwise-state-manager.png']
 
 [cover]
   image = 'images/blog/bitwise-state-manager.png'
-  alt = 'Fetch deduplication'
+  alt = 'Bitwise state manager'
 +++
 
 If you are building complex UI components, high-traffic Node.js APIs, or intricate configuration systems, you have probably written an interface that consists of multiple boolean which looks like this:

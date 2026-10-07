@@ -5,10 +5,38 @@ date = '2025-10-09'
 draft = false
 categories = ['article']
 tags = ['angular', 'typescript', 'dependency-injection', 'frontend']
+image = 'images/blog/component-as-injection-token.png'
 
 [cover]
-  image = 'images/blog/component-as-injection-token.png'
-  alt = 'Component as Injection Token in Angular'
+  mermaid = """
+    flowchart TD
+      classDef topCard fill:#2e2e33,stroke:#10b981,stroke-width:2px,color:#f8fafc,filter:none;
+      classDef codeBox fill:#2e2e33,stroke:#e2e2e2,stroke-width:2px,color:#e3e3e3,filter:none;
+      classDef greenCard fill:#2e2e33,stroke:#10b981,stroke-width:2px,color:#f8fafc,filter:none;
+      classDef blueCard fill:#2e2e33,stroke:#3b82f6,stroke-width:2px,color:#f8fafc,filter:none;
+      classDef purpleCard fill:#2e2e33,stroke:#8b5cf6,stroke-width:2px,color:#f8fafc,filter:none;
+      classDef titleStyle fill:none,stroke:none;
+
+      linkStyle default filter:none,stroke-width:2px;
+
+      title("<div style='width: 700px; font-size: 28px; font-weight: bold; color: rgba(255, 255, 255, 1); text-align: center;'>Component as Injection Token</div>"):::titleStyle
+
+      nav("<div style='width: 350px; text-align: center; padding: 5px;'><i class='fas fa-code' style='color: rgba(16, 185, 129, 1);'></i> Home > Components > Breadcrumb</div>"):::topCard
+
+      code("<div style='width: 600px; text-align: left; font-family: monospace;'><b>@Component</b>({<br>&nbsp;&nbsp;providers: [{<br>&nbsp;&nbsp;&nbsp;&nbsp;provide: BreadcrumbComponent,<br>&nbsp;&nbsp;&nbsp;&nbsp;useExisting: forwardRef(() => BreadcrumbComponent)<br>&nbsp;&nbsp;}]<br>})<br><b>class</b> BreadcrumbComponent {<br>&nbsp;&nbsp;separator = input('&gt;')<br>&nbsp;&nbsp;// injected via inject(BreadcrumbComponent)<br>}</div>"):::codeBox
+
+      providers("<div style='width: 190px; text-align: left;'><div style="display: flex; align-items: center; gap: 8px;"><i class='fas fa-code' style='color: rgba(16, 185, 129, 1); font-size: 1.2em; flex-grow: 0; flex-shrink: 0;'></i><b style='color: rgba(227, 227, 227, 1); font-size: 18px; font-weight: 600;'>providers</b></div><span style='color: rgba(227, 227, 227, 1); display: block; margin-top: 12px;'>Registers the parent component itself as a DI token for its descendants.</span></div>"):::greenCard
+
+      inject("<div style='width: 190px; text-align: left;'><div style="display: flex; align-items: center; gap: 8px;"><i class='fas fa-code' style='color: rgba(59, 130, 246, 1); font-size: 1.2em; flex-grow: 0; flex-shrink: 0;'></i><b style='color: rgba(227, 227, 227, 1); font-size: 18px; font-weight: 600;'>inject()</b></div><span style='color: rgba(227, 227, 227, 1); display: block; margin-top: 12px;'>Child injects the token with optional: true to stay safe when provider is not provided.</span></div>"):::blueCard
+
+      fRef("<div style='width: 190px; text-align: left;'><div style="display: flex; align-items: center; gap: 8px;"><i class='fas fa-code' style='color: rgba(139, 92, 246, 1); font-size: 1.2em; flex-grow: 0; flex-shrink: 0;'></i><b style='color: rgba(227, 227, 227, 1); font-size: 18px; font-weight: 600;'>forwardRef</b></div><span style='color: rgba(148, 163, 184, 1); display: block; margin-top: 12px;'>useExisting + forwardRef resolve the token without circular errors.</span></div>"):::purpleCard
+
+      title ~~~ nav
+      nav --> code
+      code --> providers
+      code --> inject
+      code --> fRef
+  """
 +++
 
 Dependency injection (DI) is a fundamental feature in Angular. Implementing DI helps adhere to the SOLID principle, specifically promoting loose-coupling between modules. This makes the codebase understandable, flexible, and maintainable. The core idea of DI is to separate business logic and view logic, allowing the business logic (in the form of service) to be easily reusable across components, as long as the Dependency Provider covers those components.
@@ -24,75 +52,75 @@ import { Component, input } from '@angular/core'
 import { CommonModule } from '@angular/common'
 
 @Component({
-    selector: 'app-breadcrumb',
-    standalone: true,
-    template: '<ng-content />',
-    styles: [
-        `
-            :host {
-                display: block;
-            }
-        `
-    ],
-    providers: [
-        { provide: BreadcrumbComponent, useExisting: forwardRef(() => BreadcrumbComponent) }
-    ]
+  selector: 'app-breadcrumb',
+  standalone: true,
+  template: '<ng-content />',
+  styles: [
+    `
+      :host {
+          display: block;
+      }
+    `
+  ],
+  providers: [
+      { provide: BreadcrumbComponent, useExisting: forwardRef(() => BreadcrumbComponent) }
+  ]
 })
 class BreadcrumbComponent {
-    public readonly separator = input<string>('/')
+  public readonly separator = input<string>('/')
 }
 
 @Component({
-    selector: 'app-breadcrumb-item',
-    standalone: true,
-    imports: [CommonModule],
-    template: `
-        <ng-content />
+  selector: 'app-breadcrumb-item',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <ng-content />
 
-        @if (separator()) {
-            <span class="separator">{{ separator() }}</span>
-        }
-    `,
-    styles: [
-        `
-            :host {
-                display: inline-block;
-            }
+    @if (separator()) {
+        <span class="separator">{{ separator() }}</span>
+    }
+  `,
+  styles: [
+    `
+      :host {
+          display: inline-block;
+      }
 
-            .separator {
-                margin: 0 8px;
-            }
+      .separator {
+          margin: 0 8px;
+      }
 
-            :host:last-child .separator {
-                display: none;
-            }
-        `
-    ]
+      :host:last-child .separator {
+          display: none;
+      }
+    `
+  ]
 })
 class BreadcrumbItemComponent {
-    private readonly breadcrumbComponent = inject(BreadcrumbComponent, {optional: true})
+  private readonly breadcrumbComponent = inject(BreadcrumbComponent, {optional: true})
 
-    protected readonly separator = computed(() => this.breadcrumbComponent?.separator() ?? '');
+  protected readonly separator = computed(() => this.breadcrumbComponent?.separator() ?? '');
 }
 
 @Component({
-    selector: 'demo-breadcrumb',
-    standalone: true,
-    imports: [BreadcrumbItemComponent],
-    template: `
-        <!-- Example with custom separator -->
-        <app-breadcrumb separator=">">
-            <app-breadcrumb-item>Home</app-breadcrumb-item>
-            <app-breadcrumb-item>Components</app-breadcrumb-item>
-            <app-breadcrumb-item>Breadcrumb</app-breadcrumb-item>
-        </app-breadcrumb>
+  selector: 'demo-breadcrumb',
+  standalone: true,
+  imports: [BreadcrumbItemComponent],
+  template: `
+    <!-- Example with custom separator -->
+    <app-breadcrumb separator=">">
+        <app-breadcrumb-item>Home</app-breadcrumb-item>
+        <app-breadcrumb-item>Components</app-breadcrumb-item>
+        <app-breadcrumb-item>Breadcrumb</app-breadcrumb-item>
+    </app-breadcrumb>
 
-        <!-- Example with default separator -->
-        <app-breadcrumb>
-            <app-breadcrumb-item>Default</app-breadcrumb-item>
-            <app-breadcrumb-item>Separator</app-breadcrumb-item>
-        </app-breadcrumb>
-    `
+    <!-- Example with default separator -->
+    <app-breadcrumb>
+        <app-breadcrumb-item>Default</app-breadcrumb-item>
+        <app-breadcrumb-item>Separator</app-breadcrumb-item>
+    </app-breadcrumb>
+  `
 })
 ```
 
