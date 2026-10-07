@@ -13,7 +13,7 @@
 {{- end }}
 
 <head>
-    {{- partialCached "head.html" . }}
+    {{- partial "head.html" . .RelPermalink }}
 </head>
 
 {{- if (or (ne .Kind `page` ) (eq .Layout `archives`) (eq .Layout `search`)) }}
@@ -21,11 +21,11 @@
 {{- else }}
 <body id="top">
 {{- end }}
-    {{ partialCached "header.html" . .Page -}}
+    {{ partial "header.html" . .Page -}}
     <main class="main">
         {{- block "main" . }}{{ end }}
     </main>
-    {{ partialCached "footer.html" . .Layout .Kind (.Param "hideFooter") (.Param "ShowCodeCopyButtons") -}}
+    {{ partial "footer.html" . .Layout .Kind (.Param "hideFooter") (.Param "ShowCodeCopyButtons") -}}
 </body>
 
 </html>
