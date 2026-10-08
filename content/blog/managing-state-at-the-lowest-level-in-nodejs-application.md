@@ -32,21 +32,21 @@ By treating a single integer as a sequence of independent true/false flags, you 
 
 We should know about bits operations teory before deep diving into the real implementations. If you already familiar with the concept, you can skip this section and go to [this section](#implementation)
 
-### 1. What is Bits Operations?
+### What is Bits Operations?
 
 Bitwise are fundamental actions performed on the binary representations of numbers at the lowest level of a computer's processor. Instead of treating a number as a single value (like 5 or 10), bitwise evaluate and manipulate each individual bit that makes up that number.
 
-## Why Are Bits Better?
+### Why Are Bits Better?
 
 It is easy to claim bitwise are faster, but understanding _why_ requires looking at how engines like V8 (Node.js/Chrome) operate.
 
-### 1. Memory Efficiency (The Macro View)
+#### Memory Efficiency (The Macro View)
 
 If you benchmark an array of 10,000,000 boolean objects against an array of 10,000,000 bitmask integers in Node.js, the boolean array will typically consume largest memory compared to bitmask integers.
 
 Every time you add a boolean property to an object (`{ a: true, b: false }`), V8 creates a "Hidden Class" to map those properties. A bitmask integer, however, is stored as a **smis (small integers)**. V8 highly optimizes small integers (`smis`), storing them directly in the pointer space without allocating _any_ extra bytes on the heap.
 
-### 2. CPU Speed (The Micro View)
+#### CPU Speed (The Micro View)
 
 To genuinely measure CPU execution time, standard clocks are not accurate enough. By using Node's `perf_hooks` API, which provides sub-millisecond, high-resolution performance measurement, we can isolate the exact execution time of the logic.
 
