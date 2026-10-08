@@ -106,7 +106,7 @@ Instead of using standard boolean logic (`&&` and `||`), you can manipulate the 
 The real example of bitwise operation implementation is by utilize it to store a bunch of boolean values. Given a value of 8 bit number. This number can store max 7 states. If more space is needed, it can use 16 bit number. More bits, more memory will be used.
 
 ```typescript
-let state = 00000000;
+let state = 0b00000000;
 
 // Set autosave to true
 state = state & EditoSettingAction.AutoSave;
