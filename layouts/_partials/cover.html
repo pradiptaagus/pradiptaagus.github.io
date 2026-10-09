@@ -64,6 +64,17 @@
       </figure>
     {{- else if .Params.cover.mermaid }}
       {{ partial "mermaid.html" .Params.cover.mermaid -}}
+    {{- else if .Params.cover.shortcode }}
+      {{- $filePath := printf "layouts/_shortcodes/%s.html" .Params.cover.shortcode -}}
+      {{- if fileExists $filePath -}}
+        {{- $content := readFile $filePath -}}
+        {{- $name := printf "templ-%d" now.UnixNano -}}
+        
+        {{- $resource := resources.FromString $name $content -}}
+        {{- $renderedContent := $resource | resources.ExecuteAsTemplate $name . -}}
+        
+        {{- $renderedContent.Content | safeHTML -}}
+      {{- end -}}
     {{- end }}
   {{- end }}
 {{- end }}

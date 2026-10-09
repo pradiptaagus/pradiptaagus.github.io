@@ -1,19 +1,20 @@
+{{- $id := printf "bitwise-state-manager-%d" now.UnixNano -}}
+
 <div
   class="bitwise-state-manager tw-flex tw-flex-col tw-gap-10 tw-items-center tw-py-4 tw-px-2 md:tw-px-4 md:tw-py-5 tw-text-white tw-bg-[#1c1d21] dark:tw-bg-[#2e2e33] tw-rounded"
+  id="{{ $id }}"
 >
-  <h2 class="tw-text-xl tw-text-center tw-font-bold !tw-m-0 tw-text-inherit">
+  <h2 class="tw-text-center tw-font-bold !tw-m-0 tw-text-inherit tw-font-sans tw-text-[32px]">
     Bitwise State Manager
   </h2>
   <!-- Input Flags -->
   <div
-    class="tw-flex tw-flex-row tw-flex-nowrap tw-gap-0.5 md:tw-gap-1 tw-justify-center"
-    id="bitwise-flags"
+    class="bitwise-flags tw-flex tw-flex-row tw-flex-nowrap tw-gap-0.5 md:tw-gap-1 tw-justify-center"
   ></div>
 
   <!-- Active Settings -->
   <div
-    class="tw-flex-row tw-flex-wrap tw-gap-1 tw-justify-center tw-hidden"
-    id="active-settings"
+    class="active-settings tw-flex-row tw-flex-wrap tw-gap-1 tw-justify-center tw-hidden"
   ></div>
 
   <!-- Readable Value -->
@@ -38,8 +39,7 @@
 
   <!-- Swtches -->
   <div
-    class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 md:tw-gap-x-20 tw-gap-y-5 tw-w-full md:tw-w-fit"
-    id="switches"
+    class="switches tw-grid tw-grid-cols-1 md:tw-grid-cols-2 md:tw-gap-x-20 tw-gap-y-5 tw-w-full md:tw-w-fit"
   ></div>
 </div>
 
@@ -53,10 +53,12 @@
       "MinimapEnabled",
     ];
 
+    const parentSelector = `.bitwise-state-manager#{{ $id }}`;
+
     // Initialize the bitwise flags display
     (() => {
       const bitwiseFlagsContainer = document.querySelector(
-        ".bitwise-state-manager #bitwise-flags",
+        `${parentSelector} .bitwise-flags`,
       );
       bitwiseFlagsContainer.innerHTML = "";
       for (let i = 7; i >= 0; i--) {
@@ -80,7 +82,7 @@
     // Initialize the switches
     (() => {
       const switchesContainer = document.querySelector(
-        ".bitwise-state-manager #switches",
+        `${parentSelector} .switches`,
       );
       switchesContainer.innerHTML = "";
       for (let i = 0; i < actions.length; i++) {
@@ -106,18 +108,18 @@
       }
     })();
 
-    const digits = document.querySelectorAll(".bitwise-state-manager .digit");
+    const digits = document.querySelectorAll(`${parentSelector} .digit`);
     const switches = document.querySelectorAll(
-      ".bitwise-state-manager input[type='checkbox']",
+      `${parentSelector} input[type='checkbox']`,
     );
     const decimalValueElement = document.querySelector(
-      ".bitwise-state-manager .decimal-value",
+      `${parentSelector} .decimal-value`,
     );
     const binaryValueElement = document.querySelector(
-      ".bitwise-state-manager .binary-value",
+      `${parentSelector} .binary-value`,
     );
     const activeSettingsContainer = document.querySelector(
-      ".bitwise-state-manager #active-settings",
+      `${parentSelector} .active-settings`,
     );
     const settingColors = [
       "tw-bg-blue-500",

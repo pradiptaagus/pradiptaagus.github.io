@@ -1,13 +1,15 @@
+{{- $id := printf "bitwise-calculator-%d" now.UnixNano -}}
+
 <div
   class="bitwise-calculator tw-flex tw-flex-col tw-gap-10 tw-items-center tw-py-4 tw-px-2 md:tw-px-4 md:tw-py-5 tw-text-white tw-bg-[#1c1d21] dark:tw-bg-[#2e2e33] tw-rounded"
+  id="{{ $id }}"
 >
-  <h2 class="tw-text-xl tw-text-center tw-font-bold !tw-m-0 tw-text-inherit">
+  <h2 class="tw-text-center tw-font-bold !tw-m-0 tw-text-inherit tw-font-sans tw-text-[32px]">
     Bitwise Flag Calculator
   </h2>
   <!-- Input Flags -->
   <div
-    class="tw-flex tw-flex-row tw-flex-nowrap tw-gap-0.5 md:tw-gap-1 tw-justify-center"
-    id="bitwise-flags"
+    class="bitwise-flags tw-flex tw-flex-row tw-flex-nowrap tw-gap-0.5 md:tw-gap-1 tw-justify-center"
   ></div>
 
   <!-- Readable Value -->
@@ -30,19 +32,20 @@
     </div>
   </div>
 
-  <!-- Swtches -->
+  <!-- Switches -->
   <div
-    class="tw-grid tw-grid-cols-2 tw-gap-x-20 tw-gap-y-5"
-    id="switches"
+    class="switches tw-grid tw-grid-cols-2 tw-gap-x-20 tw-gap-y-5"
   ></div>
 </div>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
+    const parentSelector = `.bitwise-calculator#{{ $id }}`;
+
     // Initialize the bitwise flags display
     (() => {
       const bitwiseFlagsContainer = document.querySelector(
-        ".bitwise-calculator #bitwise-flags",
+        `${parentSelector} .bitwise-flags`,
       );
       bitwiseFlagsContainer.innerHTML = "";
       for (let i = 7; i >= 0; i--) {
@@ -66,7 +69,7 @@
     // Initialize the switches
     (() => {
       const switchesContainer = document.querySelector(
-        ".bitwise-calculator #switches",
+        `${parentSelector} .switches`,
       );
       switchesContainer.innerHTML = "";
       for (let i = 0; i < 8; i++) {
@@ -91,15 +94,15 @@
       }
     })();
 
-    const digits = document.querySelectorAll(".bitwise-calculator .digit");
+    const digits = document.querySelectorAll(`${parentSelector} .digit`);
     const switches = document.querySelectorAll(
-      ".bitwise-calculator input[type='checkbox']",
+      `${parentSelector} input[type='checkbox']`,
     );
     const decimalValueElement = document.querySelector(
-      ".bitwise-calculator .decimal-value",
+      `${parentSelector} .decimal-value`,
     );
     const binaryValueElement = document.querySelector(
-      ".bitwise-calculator .binary-value",
+      `${parentSelector} .binary-value`,
     );
 
     function updateValues() {
