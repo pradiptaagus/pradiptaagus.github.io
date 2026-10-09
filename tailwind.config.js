@@ -1,3 +1,5 @@
+const defaultTheme = require("tailwindcss/defaultTheme");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   prefix: "tw-",
@@ -8,7 +10,11 @@ module.exports = {
     "./themes/PaperMod/layouts/**/*.html",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ["Inter", "sans-serif", ...defaultTheme.fontFamily.sans],
+      },
+    },
   },
   plugins: [],
   corePlugins: {
