@@ -6,7 +6,7 @@ publishDate = '2026-10-02'
 draft = false
 categories = ["article"]
 tags = ["frontend", "backend", "performance", "typescript", "javascript", "Node.js"]
-image = 'images/bitwise-state-manager.png'
+images = ['images/bitwise-state-manager.png']
 
 [cover]
   shortcode = 'bitwise-state-manager'

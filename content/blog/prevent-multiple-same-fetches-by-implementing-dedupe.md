@@ -5,7 +5,7 @@ date = '2026-08-11'
 draft = false
 categories = ['article']
 tags = ['frontend', 'performance', 'typescript', 'javascript']
-image = 'images/blog/dedupe-fetch.png'
+images = ['images/blog/dedupe-fetch.png']
 
 [cover]
   mermaid = """

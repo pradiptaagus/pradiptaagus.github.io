@@ -5,7 +5,7 @@ date = '2026-07-10'
 draft = false
 categories = ['article']
 tags = ['react', 'typescript', 'frontend', 'state-management']
-image = 'images/blog/react-context-as-dependency-injection.png'
+images = ['images/blog/react-context-as-dependency-injection.png']
 
 [cover]
   mermaid = """
