@@ -1,37 +1,37 @@
-{{- $id := printf "bitwise-state-manager-%d" now.UnixNano -}}
+{{- $id := printf "bitwise-state-manager-%d" math.Counter -}}
 
 <div
-  class="bitwise-state-manager tw-flex tw-flex-col tw-gap-10 tw-items-center tw-py-4 tw-px-2 md:tw-px-4 md:tw-py-5 tw-text-white tw-bg-[#1c1d21] dark:tw-bg-[#2e2e33] tw-rounded"
+  class="bitwise-state-manager tw:flex tw:flex-col tw:gap-10 tw:items-center tw:py-4 tw:px-2 tw:md:px-4 tw:md:py-5 tw:text-white tw:bg-[#1c1d21] tw:dark:bg-[#2e2e33] tw:rounded"
   id="{{ $id }}"
 >
-  <h2 class="tw-text-center tw-font-bold !tw-m-0 tw-text-inherit tw-font-sans tw-text-[32px]">
+  <h2 class="tw:text-center tw:font-bold !tw:m-0 tw:text-inherit tw:font-sans tw:text-[32px]">
     Bitwise State Manager
   </h2>
   <!-- Input Flags -->
   <div
-    class="bitwise-flags tw-flex tw-flex-row tw-flex-nowrap tw-gap-0.5 md:tw-gap-1 tw-justify-center"
+    class="bitwise-flags tw:flex tw:flex-row tw:flex-nowrap tw:gap-0.5 tw:md:gap-1 tw:justify-center"
   ></div>
 
   <!-- Active Settings -->
   <div
-    class="active-settings tw-flex-row tw-flex-wrap tw-gap-1 tw-justify-center tw-hidden"
+    class="active-settings tw:flex-row tw:flex-wrap tw:gap-1 tw:justify-center tw:hidden"
   ></div>
 
   <!-- Readable Value -->
   <div
-    class="tw-flex tw-items-stretch tw-flex-row tw-gap-10 md:tw-gap-20 tw-justify-between tw-flex-nowrap"
+    class="tw:flex tw:items-stretch tw:flex-row tw:gap-10 tw:md:gap-20 tw:justify-between tw:flex-nowrap"
   >
-    <div class="tw-flex tw-flex-col tw-items-center tw-flex-1">
-      <small class="tw-text-sm tw-text-nowrap">Decimal Value</small>
-      <span class="decimal-value tw-text-lg tw-font-semibold">0</span>
+    <div class="tw:flex tw:flex-col tw:items-center tw:flex-1">
+      <small class="tw:text-sm tw:text-nowrap">Decimal Value</small>
+      <span class="decimal-value tw:text-lg tw:font-semibold">0</span>
     </div>
     <div
-      class="tw-border-0 tw-border-l tw-border-solid tw-flex-shrink-0 tw-flex-grow-0 tw-my-2"
+      class="tw:border-0 tw:border-l tw:border-solid tw:shrink-0 tw:grow-0 tw:my-2"
     ></div>
-    <div class="tw-flex tw-flex-col tw-items-center tw-flex-1">
-      <small class="tw-text-sm tw-text-nowrap">Binary Value</small>
+    <div class="tw:flex tw:flex-col tw:items-center tw:flex-1">
+      <small class="tw:text-sm tw:text-nowrap">Binary Value</small>
       <span
-        class="binary-value tw-text-lg tw-font-semibold tw-inline-block tw-w-fit tw-text-nowrap"
+        class="binary-value tw:text-lg tw:font-semibold tw:inline-block tw:w-fit tw:text-nowrap"
         >00000000</span
       >
     </div>
@@ -39,7 +39,7 @@
 
   <!-- Swtches -->
   <div
-    class="switches tw-grid tw-grid-cols-1 md:tw-grid-cols-2 md:tw-gap-x-20 tw-gap-y-5 tw-w-full md:tw-w-fit"
+    class="switches tw:grid tw:grid-cols-1 tw:md:grid-cols-2 tw:md:gap-x-20 tw:gap-y-5 tw:w-full tw:md:w-fit"
   ></div>
 </div>
 
@@ -64,14 +64,14 @@
       for (let i = 7; i >= 0; i--) {
         const flagDiv = document.createElement("div");
         flagDiv.className =
-          "tw-flex tw-flex-col tw-gap-0.5 tw-items-center tw-w-10";
+          "tw:flex tw:flex-col tw:gap-0.5 tw:items-center tw:w-10";
         const digitDiv = document.createElement("div");
         digitDiv.className =
-          "digit tw-border md:tw-border-2 tw-border-solid tw-border-gray-700 dark:tw-border-gray-50 tw-rounded tw-w-9 md:tw-w-10 tw-h-9 md:tw-h-10 tw-flex tw-justify-center tw-items-center tw-text-base";
+          "digit tw:border tw:md:border-2 tw:border-solid tw:border-gray-700 tw:dark:border-gray-50 tw:rounded tw:w-9 tw:md:w-10 tw:h-9 tw:md:h-10 tw:flex tw:justify-center tw:items-center tw:text-base";
         digitDiv.textContent = "0";
         const smallLabel = document.createElement("small");
         smallLabel.className =
-          "tw-text-xs tw-text-gray-500 dark:tw-text-gray-400 tw-text-center";
+          "tw:text-xs tw:text-gray-500 tw:dark:text-gray-400 tw:text-center";
         smallLabel.textContent = `2^${i}`;
         flagDiv.appendChild(digitDiv);
         flagDiv.appendChild(smallLabel);
@@ -88,18 +88,18 @@
       for (let i = 0; i < actions.length; i++) {
         const switchDiv = document.createElement("div");
         switchDiv.className =
-          "tw-flex tw-flex-row tw-justify-start tw-items-center tw-gap-2";
+          "tw:flex tw:flex-row tw:justify-start tw:items-center tw:gap-2";
 
         const label = document.createElement("label");
         label.className =
-          "tw-text-sm tw-font-semibold tw-select-none tw-text-nowrap";
+          "tw:text-sm tw:font-semibold tw:select-none tw:text-nowrap";
         label.setAttribute("for", `bitwise-state-manager-switch-${i + 1}`);
         label.textContent = `${actions[i]} (${i})`;
 
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.id = `bitwise-state-manager-switch-${i + 1}`;
-        checkbox.className = "tw-w-5 tw-h-5 tw-grow-0 tw-shrink-0";
+        checkbox.className = "tw:w-5 tw:h-5 tw:grow-0 tw:shrink-0";
         checkbox.addEventListener("change", updateValues);
 
         switchDiv.appendChild(checkbox);
@@ -122,11 +122,11 @@
       `${parentSelector} .active-settings`,
     );
     const settingColors = [
-      "tw-bg-blue-500",
-      "tw-bg-emerald-500",
-      "tw-bg-amber-500",
-      "tw-bg-violet-500",
-      "tw-bg-rose-500",
+      "tw:bg-blue-500",
+      "tw:bg-emerald-500",
+      "tw:bg-amber-500",
+      "tw:bg-violet-500",
+      "tw:bg-rose-500",
     ];
 
     function updateValues() {
@@ -140,12 +140,12 @@
 
           const digitElement = digits[7 - index];
           digitElement.textContent = "1";
-          digitElement.classList.add(settingColors[index], "tw-text-white");
+          digitElement.classList.add(settingColors[index], "tw:text-white");
         } else {
           binaryValue = "0" + binaryValue;
           const digitElement = digits[7 - index];
           digitElement.textContent = "0";
-          digitElement.classList.remove(settingColors[index], "tw-text-white");
+          digitElement.classList.remove(settingColors[index], "tw:text-white");
         }
       });
 
@@ -157,17 +157,17 @@
       // Update the active settings container
       const activeSettings = getActiveSettings(decimalValue);
       if (activeSettings.length > 0) {
-        activeSettingsContainer.classList.remove("tw-hidden");
-        activeSettingsContainer.classList.add("tw-flex");
+        activeSettingsContainer.classList.remove("tw:hidden");
+        activeSettingsContainer.classList.add("tw:flex");
       } else {
-        activeSettingsContainer.classList.add("tw-hidden");
-        activeSettingsContainer.classList.remove("tw-flex");
+        activeSettingsContainer.classList.add("tw:hidden");
+        activeSettingsContainer.classList.remove("tw:flex");
       }
 
       activeSettingsContainer.innerHTML = "";
       activeSettings.reverse().forEach((setting) => {
         const settingElement = document.createElement("span");
-        settingElement.className = `tw-inline-block tw-rounded-sm ${settingColors[setting.index]} tw-text-white tw-px-2 tw-py-1 tw-text-xs tw-font-semibold`;
+        settingElement.className = `tw:inline-block tw:rounded-sm ${settingColors[setting.index]} tw:text-white tw:px-2 tw:py-1 tw:text-xs tw:font-semibold`;
         settingElement.textContent = setting.name;
         activeSettingsContainer.appendChild(settingElement);
       });
