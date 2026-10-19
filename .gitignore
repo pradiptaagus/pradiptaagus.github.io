@@ -5,3 +5,4 @@ resources/
 .DS_Store
 *.log
 static/css/
+hugo_stats.json

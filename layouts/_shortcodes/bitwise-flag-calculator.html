@@ -1,32 +1,32 @@
-{{- $id := printf "bitwise-calculator-%d" now.UnixNano -}}
+{{- $id := printf "bitwise-calculator-%d" math.Counter -}}
 
 <div
-  class="bitwise-calculator tw-flex tw-flex-col tw-gap-10 tw-items-center tw-py-4 tw-px-2 md:tw-px-4 md:tw-py-5 tw-text-white tw-bg-[#1c1d21] dark:tw-bg-[#2e2e33] tw-rounded"
+  class="bitwise-calculator tw:flex tw:flex-col tw:gap-10 tw:items-center tw:py-4 tw:px-2 tw:md:px-4 tw:md:py-5 tw:text-white tw:bg-[#1c1d21] tw:dark:bg-[#2e2e33] tw:rounded"
   id="{{ $id }}"
 >
-  <h2 class="tw-text-center tw-font-bold !tw-m-0 tw-text-inherit tw-font-sans tw-text-[32px]">
+  <h2 class="tw:text-center tw:font-bold !tw:m-0 tw:text-inherit tw:font-sans tw:text-[32px]">
     Bitwise Flag Calculator
   </h2>
   <!-- Input Flags -->
   <div
-    class="bitwise-flags tw-flex tw-flex-row tw-flex-nowrap tw-gap-0.5 md:tw-gap-1 tw-justify-center"
+    class="bitwise-flags tw:flex tw:flex-row tw:flex-nowrap tw:gap-0.5 tw:md:gap-1 tw:justify-center"
   ></div>
 
   <!-- Readable Value -->
   <div
-    class="tw-flex tw-items-stretch tw-flex-row tw-gap-10 md:tw-gap-20 tw-justify-between tw-flex-nowrap"
+    class="tw:flex tw:items-stretch tw:flex-row tw:gap-10 tw:md:gap-20 tw:justify-between tw:flex-nowrap"
   >
-    <div class="tw-flex tw-flex-col tw-items-center tw-flex-1">
-      <small class="tw-text-sm tw-text-nowrap">Decimal Value</small>
-      <span class="decimal-value tw-text-lg tw-font-semibold">0</span>
+    <div class="tw:flex tw:flex-col tw:items-center tw:flex-1">
+      <small class="tw:text-sm tw:text-nowrap">Decimal Value</small>
+      <span class="decimal-value tw:text-lg tw:font-semibold">0</span>
     </div>
     <div
-      class="tw-border-0 tw-border-l tw-border-solid tw-flex-shrink-0 tw-flex-grow-0 tw-my-2"
+      class="tw:border-0 tw:border-l tw:border-solid tw:shrink-0 tw:grow-0 tw:my-2"
     ></div>
-    <div class="tw-flex tw-flex-col tw-items-center tw-flex-1">
-      <small class="tw-text-sm tw-text-nowrap">Binary Value</small>
+    <div class="tw:flex tw:flex-col tw:items-center tw:flex-1">
+      <small class="tw:text-sm tw:text-nowrap">Binary Value</small>
       <span
-        class="binary-value tw-text-lg tw-font-semibold tw-inline-block tw-w-fit tw-text-nowrap"
+        class="binary-value tw:text-lg tw:font-semibold tw:inline-block tw:w-fit tw:text-nowrap"
         >00000000</span
       >
     </div>
@@ -34,7 +34,7 @@
 
   <!-- Switches -->
   <div
-    class="switches tw-grid tw-grid-cols-2 tw-gap-x-20 tw-gap-y-5"
+    class="switches tw:grid tw:grid-cols-2 tw:gap-x-20 tw:gap-y-5"
   ></div>
 </div>
 
@@ -51,14 +51,14 @@
       for (let i = 7; i >= 0; i--) {
         const flagDiv = document.createElement("div");
         flagDiv.className =
-          "tw-flex tw-flex-col tw-gap-0.5 tw-items-center tw-w-10";
+          "tw:flex tw:flex-col tw:gap-0.5 tw:items-center tw:w-10";
         const digitDiv = document.createElement("div");
         digitDiv.className =
-          "digit tw-border md:tw-border-2 tw-border-solid tw-border-gray-700 dark:tw-border-gray-50 tw-rounded tw-w-9 md:tw-w-10 tw-h-9 md:tw-h-10 tw-flex tw-justify-center tw-items-center tw-text-base";
+          "digit tw:border tw:md:border-2 tw:border-solid tw:border-gray-700 tw:dark:border-gray-50 tw:rounded tw:w-9 tw:md:w-10 tw:h-9 tw:md:h-10 tw:flex tw:justify-center tw:items-center tw:text-base";
         digitDiv.textContent = "0";
         const smallLabel = document.createElement("small");
         smallLabel.className =
-          "tw-text-xs tw-text-gray-500 dark:tw-text-gray-400 tw-text-center";
+          "tw:text-xs tw:text-gray-500 tw:dark:text-gray-400 tw:text-center";
         smallLabel.textContent = `2^${i}`;
         flagDiv.appendChild(digitDiv);
         flagDiv.appendChild(smallLabel);
@@ -75,17 +75,17 @@
       for (let i = 0; i < 8; i++) {
         const switchDiv = document.createElement("div");
         switchDiv.className =
-          "tw-flex tw-flex-row tw-justify-start tw-items-center tw-gap-2";
+          "tw:flex tw:flex-row tw:justify-start tw:items-center tw:gap-2";
 
         const label = document.createElement("label");
-        label.className = "tw-text-sm tw-font-semibold tw-select-none";
+        label.className = "tw:text-sm tw:font-semibold tw:select-none";
         label.setAttribute("for", `bitwise-flag-switch-${i + 1}`);
         label.textContent = `Bit ${i} (${Math.pow(2, i)})`;
 
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.id = `bitwise-flag-switch-${i + 1}`;
-        checkbox.className = "tw-w-5 tw-h-5";
+        checkbox.className = "tw:w-5 tw:h-5";
         checkbox.addEventListener("change", updateValues);
 
         switchDiv.appendChild(checkbox);
@@ -116,12 +116,12 @@
 
           const digitElement = digits[7 - index];
           digitElement.textContent = "1";
-          digitElement.classList.add("tw-bg-blue-500", "tw-text-white");
+          digitElement.classList.add("tw:bg-blue-500", "tw:text-white");
         } else {
           binaryValue = "0" + binaryValue;
           const digitElement = digits[7 - index];
           digitElement.textContent = "0";
-          digitElement.classList.remove("tw-bg-blue-500", "tw-text-white");
+          digitElement.classList.remove("tw:bg-blue-500", "tw:text-white");
         }
       });
 

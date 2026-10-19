@@ -1,0 +1,57 @@
+body,
+.main,
+.header,
+.footer,
+.post-entry,
+.entry-header,
+.entry-content,
+p,
+li,
+a,
+span,
+div,
+th,
+td,
+label,
+input,
+button,
+nav,
+section,
+article,
+header,
+footer,
+aside,
+main {
+  font-family: 'Inter', sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+  font-size: 16px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Fira Code', monospace;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+code,
+pre,
+kbd,
+samp,
+.highlight,
+.highlight *,
+code[class*="language-"],
+pre[class*="language-"],
+pre code {
+  font-family: 'Fira Code', monospace;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-size: .875rem;
+}
