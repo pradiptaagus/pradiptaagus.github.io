@@ -5,7 +5,7 @@ date = '2026-08-11'
 draft = false
 categories = ['article']
 tags = ['frontend', 'performance', 'typescript', 'javascript']
-images = ['images/blog/dedupe-fetch.png']
+images = ['dedupe-fetch.png']
 
 [cover]
   mermaid = """
@@ -19,17 +19,17 @@ images = ['images/blog/dedupe-fetch.png']
 
       linkStyle default filter:none,stroke-width:2px;
 
-      title("<div style='width: 700px; text-align: center;'><div style='font-size: 28px; font-weight: 600; color: rgba(255, 255, 255, 1);'>Prevent Duplicate Fetches</div><div style='font-size: 16px; color: rgba(148, 163, 184, 1); margin-top: 4px;'>Three callers, one network request — via in-flight deduplication</div></div>"):::titleStyle
+      title("<div style='width: 700px; text-align: center;'><div style='font-size: 28px; font-weight: 600; color: rgba(255, 255, 255, 1);'>Prevent Duplicate Fetches</div><div style='font-size: 16px; color: rgba(148, 163, 184, 1); margin-top: 4px;'>Three callers, one network request via in-flight deduplication</div></div>"):::titleStyle
 
       server("<div style='width: 250px; text-align: center;'><div style='color: rgba(227, 227, 227, 1); font-size: 18px; font-weight: 600;'>API Server</div></div>"):::codeBox
 
-      dedupe("<div style='width: 400px; text-align: center;'><div style='color: rgba(227, 227, 227, 1); font-size: 18px; font-weight: 600;'>dedupe()</div><div style='color: rgba(148, 163, 184, 1); font-family: monospace; font-size: 14px; margin-top: 8px;'>Map&lt;key, Promise&gt;</div><div style='background-color: #1e1e24; color: #e2e2e2; margin-top: 8px;'><span style="font-family: monospace">&quot;GET:/api/me:&quot;</span> &rarr; shared promise</div><div style='color: rgba(227, 227, 227, 1); font-size: 12px; font-family: inherit; margin-top: 8px;'>same key &rarr; return existing promise</div></div>"):::greenCard
+      dedupe("<div style='width: 400px; text-align: center;'><div style='color: rgba(16, 185, 129, 1); font-size: 18px; font-weight: 600;'>dedupe()</div><div style='color: rgba(148, 163, 184, 1); font-family: monospace; font-size: 14px; margin-top: 8px;'>Map&lt;key, Promise&gt;</div><div style='background-color: #1e1e24; color: #e2e2e2; margin-top: 8px;'><span style="font-family: monospace">&quot;GET:/api/me:&quot;</span> &rarr; shared promise</div><div style='color: rgba(227, 227, 227, 1); font-size: 12px; font-family: inherit; margin-top: 8px;'>same key &rarr; return existing promise</div></div>"):::greenCard
 
-      caller1("<div style='width: 190px; text-align: center;'><div style='color: rgba(227, 227, 227, 1); font-size: 18px; font-weight: 600;'>&lt;Header /&gt;</div><div style='color: rgba(227, 227, 227, 1); font-family: monospace; font-size: 14px; margin-top: 8px;'>GET /api/me</div></div>"):::blueCard
+      caller1("<div style='width: 190px; text-align: center;'><div style='color: rgba(59, 130, 246, 1); font-size: 18px; font-weight: 600;'>&lt;Header /&gt;</div><div style='color: rgba(227, 227, 227, 1); font-family: monospace; font-size: 14px; margin-top: 8px;'>GET /api/me</div></div>"):::blueCard
 
-      caller2("<div style='width: 190px; text-align: center;'><div style='color: rgba(227, 227, 227, 1); font-size: 18px; font-weight: 600;'>&lt;Sidebar /&gt;</div><div style='color: rgba(227, 227, 227, 1); font-family: monospace; font-size: 14px; margin-top: 8px;'>GET /api/me</div></div>"):::purpleCard
+      caller2("<div style='width: 190px; text-align: center;'><div style='color: rgba(139, 92, 246, 1); font-size: 18px; font-weight: 600;'>&lt;Sidebar /&gt;</div><div style='color: rgba(227, 227, 227, 1); font-family: monospace; font-size: 14px; margin-top: 8px;'>GET /api/me</div></div>"):::purpleCard
 
-      caller3("<div style='width: 190px; text-align: center;'><div style='color: rgba(227, 227, 227, 1); font-size: 18px; font-weight: 600;'>&lt;Activity /&gt;</div><div style='color: rgba(227, 227, 227, 1); font-family: monospace; font-size: 14px; margin-top: 8px;'>GET /api/me</div></div>"):::greenCard
+      caller3("<div style='width: 190px; text-align: center;'><div style='color: rgba(16, 185, 129, 1); font-size: 18px; font-weight: 600;'>&lt;Activity /&gt;</div><div style='color: rgba(227, 227, 227, 1); font-family: monospace; font-size: 14px; margin-top: 8px;'>GET /api/me</div></div>"):::greenCard
 
       title ~~~ server
       server -->|"<div style='color: rgba(16, 185, 129, 1); font-weight: bold; padding: 4px;'>1 request</div>"| dedupe
@@ -56,7 +56,7 @@ useEffect(() => {
 }, []);
 ```
 
-Three mounts, three identical requests, three network round trips — for the exact same data. Now multiply that by every user with a slow connection, and you have wasted bandwidth, unnecessary load on your API server, and a higher chance of hitting rate limits.
+Three mounts, three identical requests, three network round trips for the exact same data. Now multiply that by every user with a slow connection, and you have wasted bandwidth, unnecessary load on your API server, and a higher chance of hitting rate limits.
 
 This pattern shows up everywhere:
 
@@ -90,11 +90,11 @@ They are complementary. Dedupe saves you from concurrent duplicates; a cache sav
 
 ## Who Needs This
 
-Any frontend codebase that calls `fetch` directly and shares data across components. If you are already using a query library like React Query, SWR, or Apollo, you get deduplication for free — but the moment you write raw `fetch` calls, or build your own API client, you are on your own.
+Any frontend codebase that calls `fetch` directly and shares data across components. If you are already using a query library like React Query, SWR, or Apollo, you get deduplication for free, but the moment you write raw `fetch` calls, or build your own API client, you are on your own.
 
 A small dedupe wrapper is enough to cover:
 
-- Vanilla JavaScript / TypeScript apps.
+- Vanilla JavaScript/TypeScript apps.
 - React or Vue apps that manage data with `useState` instead of a query library.
 - Any team that wraps `fetch` in a shared `api.ts` module.
 
@@ -102,9 +102,9 @@ A small dedupe wrapper is enough to cover:
 
 The golden rule: dedupe **idempotent, read-only requests**. In practice:
 
-- **Same component mounting in multiple places** — e.g., a user card rendered in a list and in the sidebar.
-- **Concurrent consumers** — several components on one page asking for the same entity.
-- **Retry-on-error flows** — a failed request being retried while a sibling still holds the original in-flight promise.
+- **Same component mounting in multiple places**: e.g., a user card rendered in a list and in the sidebar.
+- **Concurrent consumers**: several components on one page asking for the same entity.
+- **Retry-on-error flows**: a failed request being retried while a sibling still holds the original in-flight promise.
 
 ## Where to Put the Logic
 
@@ -133,10 +133,10 @@ export const api = {
 
 Deduplication is a cheap, high-leverage win:
 
-- **Fewer network calls** — one request instead of five, straight off the wire.
-- **Lower server load** — your backend stops doing the same work N times.
-- **Rate-limit safety** — fewer requests means less chance of tripping limits or 429s.
-- **Consistent results** — every caller resolves the same promise, so you cannot end up with two components holding different snapshots of the same resource (a classic source of "stale vs. fresh" bugs).
+- **Fewer network calls**: one request instead of five, straight off the wire.
+- **Lower server load**: your backend stops doing the same work N times.
+- **Rate-limit safety**: fewer requests means less chance of tripping limits or 429s.
+- **Consistent results**: every caller resolves the same promise, so you cannot end up with two components holding different snapshots of the same resource (a classic source of "stale vs. fresh" bugs).
 
 ## How It Works: The Core Idea
 
@@ -146,7 +146,7 @@ The implementation is tiny. You need:
 2. A **key function** that produces a stable string for a given request.
 3. A **lifecycle**: add the promise when a request starts, delete it when it settles.
 
-When a caller asks for `/api/me`, you compute the key. If the key is already in the map, the same fetches are already happening — return its promise. Otherwise, create a new `fetch`, store it under the key, and remove it once it settles (via `finally`, so both success and failure clean up).
+When a caller asks for `/api/me`, you compute the key. If the key is already in the map, the same fetches are already happening and return its promise. Otherwise, create a new `fetch`, store it under the key, and remove it once it settles (via `finally`, so both success and failure clean up).
 
 ## Example Implementation
 
@@ -201,7 +201,7 @@ function getKey(input: string | URL | Request, init?: RequestInit): string {
 }
 ```
 
-If you omit the method, `GET` and `POST` to the same URL would collide. If you omit the body, two different payloads to the same endpoint would dedupe into one — a bug that is very hard to spot. Include `method`, `url`, and `body` at minimum.
+If you omit the method, `GET` and `POST` to the same URL would collide. If you omit the body, two different payloads to the same endpoint would dedupe into one leading a bug that is very hard to spot. Include `method`, `url`, and `body` at minimum.
 
 ### The Shared Promise
 
@@ -218,7 +218,7 @@ The key detail is that you store the **same promise object** that you return. Al
 
 ### Cleanup on Both Outcomes
 
-Using `.finally()` means the map entry is removed whether the request **resolves or rejects**. This is critical: if you only cleaned up on success, a failed request would leave a dead promise in the map forever, and every future caller would receive the same rejected promise — a permanent blackout for that URL until the page reloads.
+Using `.finally()` means the map entry is removed whether the request **resolves or rejects**. This is critical: if you only cleaned up on success, a failed request would leave a dead promise in the map forever, and every future caller would receive the same rejected promise, leading a permanent blackout for that URL until the page reloads.
 
 ### Putting It to Work
 
@@ -269,7 +269,7 @@ export async function dedupedFetchWithTTL(
 
 ## Going Further: Monkey-Patching `window.fetch`
 
-The wrapper approach above requires every call site to use `dedupedFetch`. If you cannot touch the call sites — for example, third-party libraries or legacy code that call `fetch` directly — you can monkey-patch `fetch` itself so the dedupe logic runs on every request automatically.
+The wrapper approach above requires every call site to use `dedupedFetch`. If you cannot touch the call sites, for example, third-party libraries or legacy code that call `fetch` directly, you can monkey-patch `fetch` itself so the dedupe logic runs on every request automatically.
 
 ```ts
 const originalFetch = window.fetch.bind(window);
@@ -318,9 +318,9 @@ window.fetch = async (input, init) => {
 
 Caveats to keep in mind:
 
-- **Patch at bootstrap.** Apply the override once, before any other code calls `fetch`, otherwise early requests escape the dedupe.
-- **You override everything.** Devtools, analytics, and tracking scripts that call `fetch` are also affected — make sure the guard for non-idempotent methods is in place.
-- **Type safety.** The assignment may need a cast (`window.fetch = deduped as typeof fetch`) if the patched signature does not match the browser's types exactly.
+- **Patch at bootstrap**: Apply the override once, before any other code calls `fetch`, otherwise early requests escape the dedupe.
+- **You override everything**: Devtools, analytics, and tracking scripts that call `fetch` are also affected — make sure the guard for non-idempotent methods is in place.
+- **Type safety**: The assignment may need a cast (`window.fetch = deduped as typeof fetch`) if the patched signature does not match the browser's types exactly.
 
 Monkey-patching is the hammer: it fixes every call site at once, but it touches more than you asked for. A wrapper in your own `api.ts` is the scalpel — explicit, safe, and scoped. Prefer the wrapper unless you genuinely cannot change the call sites.
 
@@ -437,14 +437,14 @@ Dedupe is simple, but the edge cases are where bugs hide:
   }
   ```
 - **Headers in the key.** `method`, `url`, and `body` are usually enough, but if two requests differ only by a header (e.g., an auth token or `Accept-Language`), the key must include it or you will merge requests that should be separate.
-- **POST and mutations.** Never dedupe side-effecting requests. If a user double-clicks "Save", you usually want both clicks to matter, or at least to know about the second one. Only dedupe idempotent, read-only requests — or build a key that explicitly rejects mutation methods.
-- **Streaming.** If you use `ReadableStream` responses (e.g., SSE), a shared promise is dangerous — only one consumer can read the stream. Keep dedupe away from streaming endpoints.
+- **POST and mutations.** Never dedupe side-effecting requests. If a user double-clicks "Save", you usually want both clicks to matter, or at least to know about the second one. Only dedupe idempotent, read-only requests or build a key that explicitly rejects mutation methods.
+- **Streaming.** If you use `ReadableStream` responses (e.g., SSE), a shared promise is dangerous. only one consumer can read the stream. Keep dedupe away from streaming endpoints.
 
 ## When NOT to Dedupe
 
-- **Mutations** — POST/PUT/DELETE should fire exactly as many times as the user asked.
-- **Non-idempotent requests** — anything where calling it twice has different effects.
-- **Streaming / long-lived connections** — the response body cannot be shared between consumers.
+- **Mutations**: POST/PUT/DELETE should fire exactly as many times as the user asked.
+- **Non-idempotent requests**: anything where calling it twice has different effects.
+- **Streaming / long-lived connections**: the response body cannot be shared between consumers.
 
 A simple mental model: if two calls to the same request are indistinguishable and the second one is a waste, dedupe it. Otherwise, let it through.
 
@@ -458,4 +458,4 @@ Duplicate fetches are a silent waste of bandwidth, server resources, and rate-li
 | Debounced search fires overlapping queries | Duplicate query results      | Identical keys merge            |
 | Failed request retried by siblings         | Stale promise blackout       | `.finally()` cleans up on error |
 
-The whole technique fits in a `Map`, a key function, and a `finally`. It is a small investment with outsized returns — fewer requests, happier servers, and a network tab you can actually read.
+The whole technique fits in a `Map`, a key function, and a `finally`. It is a small investment with outsized returns, fewer requests, happier servers, and a network tab you can actually read.

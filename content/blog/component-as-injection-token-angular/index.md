@@ -5,7 +5,7 @@ date = '2025-10-09'
 draft = false
 categories = ['article']
 tags = ['angular', 'typescript', 'dependency-injection', 'frontend']
-images = ['images/blog/component-as-injection-token.png']
+images = ['component-as-injection-token.png']
 
 [cover]
   mermaid = """

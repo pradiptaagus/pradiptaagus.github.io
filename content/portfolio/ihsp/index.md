@@ -8,7 +8,7 @@ hideMeta = true
 tags = ['angular', 'micro-frontend', 'storybook', 'typescript']
 
 [cover]
-  image = 'images/portfolio/ihsp-screenshot.png'
+  image = 'ihsp-screenshot.png'
   alt = 'IHSP Integrated Human Capital Suites Platform dashboard screenshot'
 +++
 

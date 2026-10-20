@@ -5,7 +5,7 @@ date = '2026-07-10'
 draft = false
 categories = ['article']
 tags = ['react', 'typescript', 'frontend', 'state-management']
-images = ['images/blog/react-context-as-dependency-injection.png']
+images = ['react-context-as-dependency-injection.png']
 
 [cover]
   mermaid = """
@@ -29,7 +29,7 @@ images = ['images/blog/react-context-as-dependency-injection.png']
           b_b("<div style='width: 150px; text-align: center; font-weight: 600; color: rgba(227, 227, 227, 1);'>B</div>"):::codeBox
           b_c("<div style='width: 150px; text-align: center; font-weight: 600; color: rgba(227, 227, 227, 1);'>C</div>"):::codeBox
           b_d("<div style='width: 150px; text-align: center; font-weight: 600; color: rgba(227, 227, 227, 1);'>D</div>"):::codeBox
-          b_child("<div style='width: 170px; text-align: center;'><div style='font-size: 18px; font-weight: 600;'>Child E</div><div style='font-size: 14px; color: rgba(227, 227, 227, 1); margin-top: 4px;'>(User Profile)</div></div>"):::purpleCard
+          b_child("<div style='width: 170px; text-align: center;'><div style='font-size: 18px; font-weight: 600; color: rgba(139, 92, 246, 1);'>Child E</div><div style='font-size: 14px; color: rgba(227, 227, 227, 1); margin-top: 4px;'>(User Profile)</div></div>"):::purpleCard
           
           b_desc("<div style='width: 240px; text-align: center; font-size: 14px; color: rgba(227, 227, 227, 1);'>The tedious passing of data through all levels.</div>"):::descStyle
 
@@ -74,7 +74,7 @@ images = ['images/blog/react-context-as-dependency-injection.png']
 
 React Context is often described as a tool for sharing state across a component tree. More accurately, it is a **dependency injection (DI) mechanism** built into React itself. It allows a parent component to declare dependencies and make them available to any descendant in the tree, without passing them through every intermediate layer.
 
-Unlike external state management libraries, Context does not manage state on its own. It is a **provider** that injects values into the component hierarchy, and a **consumer** that retrieves them. This is the same pattern found in other frameworks: Angular's hierarchical injectors, Svelte's `setContext`/`getContext`, and even Vue's `provide`/`inject`. The idea is always the same — decouple the dependency **provider** from the dependency **consumer**, and let the framework handle the wiring.
+Unlike external state management libraries, Context does not manage state on its own. It is a **provider** that injects values into the component hierarchy, and a **consumer** that retrieves them. This is the same pattern found in other frameworks: Angular's hierarchical injectors, Svelte's `setContext`/`getContext`, and even Vue's `provide`/`inject`. The idea is always the same, decouple the dependency **provider** from the dependency **consumer**, and let the framework handle the wiring.
 
 ## The Problem: Prop Drilling is a Coupling Problem
 
@@ -103,7 +103,7 @@ React Context mirrors the three roles of a DI system: **token registration**, **
 
 ### 1. Token Registration with `createContext`
 
-Every dependency needs a lookup key. In React, `createContext` creates that key — the injection token.
+Every dependency needs a lookup key. In React, `createContext` creates that key as the injection token.
 
 ```tsx
 import { createContext, useContext, useState, type ReactNode } from "react";
@@ -114,11 +114,11 @@ interface AuthContextType {
   logout: () => void;
 }
 
-// Injection token — comparable to Angular's InjectionToken
+// Injection token, comparable to Angular's InjectionToken
 const AuthContext = createContext<AuthContextType | null>(null);
 ```
 
-The generic parameter defines the type of the dependency. The default value (`null`) is the fallback when no provider is found up the tree — similar to Angular's `@Optional()` decorator.
+The generic parameter defines the type of the dependency. The default value (`null`) is the fallback when no provider is found up the tree similar to Angular's `@Optional()` decorator.
 
 ### 2. Provider Binding
 
@@ -146,7 +146,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
 }
 ```
 
-The provider can live at any level of the tree. Placing it at the root makes the dependency global (like Angular's `providedIn: 'root'`). Placing it inside a specific branch scopes the dependency to that subtree (like Angular's component-level `providers` array). This hierarchical scoping is the essence of DI — the consumer does not need to know where the dependency comes from, only what token to ask for.
+The provider can live at any level of the tree. Placing it at the root makes the dependency global (like Angular's `providedIn: 'root'`). Placing it inside a specific branch scopes the dependency to that subtree (like Angular's component-level `providers` array). This hierarchical scoping is the essence of DI. The consumer does not need to know where the dependency comes from, only what token to ask for.
 
 ### 3. Injection with `useContext`
 
@@ -204,7 +204,7 @@ React Context providers are hierarchical, just like Angular's injector tree. Whe
 </AuthProvider>
 ```
 
-This is identical to Angular's element injector hierarchy — a child provider shadows its ancestor for the same token, enabling scoped overrides without affecting sibling branches.
+This is identical to Angular's element injector hierarchy. A child provider shadows its ancestor for the same token, enabling scoped overrides without affecting sibling branches.
 
 ## When to Use Context as DI
 
@@ -216,7 +216,7 @@ Context as a DI mechanism shines when a dependency is needed across many unrelat
 - **Feature flags** (enabled features per environment)
 - **API clients or service singletons** scoped to a feature module
 
-Avoid using Context for data that changes at high frequency — every change triggers re-renders in all consumers. In that case, consider a library with fine-grained reactivity. Also avoid Context when the dependency is only needed by one or two components; lifting state up or component composition is simpler.
+Avoid using Context for data that changes at high frequency. Every change triggers re-renders in all consumers. In that case, consider a library with fine-grained reactivity. Also avoid Context when the dependency is only needed by one or two components; lifting state up or component composition is simpler.
 
 Context is best understood as a **scoping mechanism**, not a state store. You are defining which part of the tree has access to which dependencies, exactly like Angular's element injector or a Guice module.
 
@@ -267,7 +267,7 @@ Because Context is often mistaken for a state management tool, it is worth clari
 - **Selectors** to prevent re-renders of unrelated consumers
 - **Middleware** for side effects (though you can compose with `useReducer`)
 
-This is the same distinction as Angular's DI vs. NgRx — one wires dependencies, the other manages state. If you need a global state store with performant reads and writes, reach for Zustand, Jotai, or NgRx. If you need to make a value available to a subtree without prop threading, Context is the right tool.
+This is the same distinction as Angular's DI vs. NgRx. one wires dependencies, the other manages state. If you need a global state store with performant reads and writes, reach for Zustand, Jotai, or NgRx. If you need to make a value available to a subtree without prop threading, Context is the right tool.
 
 ```tsx
 // Context + useReducer for local-to-global state
@@ -290,4 +290,4 @@ function CounterProvider({ children }: { children: ReactNode }) {
 | Use case           | Cross-cutting dependencies (auth, theme, i18n)          | Narrow, shallow data     | Complex, frequently-changing global state |
 | Framework parallel | Angular `providers`, Svelte `setContext`, Vue `provide` | N/A                      | NgRx, Pinia, Vuex                         |
 
-React Context is React's native DI mechanism. It decouples the provider of a dependency from its consumer, scoped to a component subtree. Treat it as infrastructure for wiring dependencies, not as a state management solution — and it will serve you well.
+React Context is React's native DI mechanism. It decouples the provider of a dependency from its consumer, scoped to a component subtree. Treat it as infrastructure for wiring dependencies, not as a state management solution and it will serve you well.
