@@ -14,16 +14,7 @@ npm run dev
 
 Visit `http://localhost:1313`.
 
-> **Note:** Always use `npm run dev` instead of `hugo server` directly. The dev script passes `--baseURL "http://localhost:1313/"` so all links stay on localhost — without it, clicking links would navigate to the production GitHub Pages URL.
-
-## Build for Production
-
-```bash
-npm run build:css
-hugo --minify
-```
-
-Output is in `public/`.
+> **Note:** Always use `npm run dev` instead of `hugo server` directly. The dev script passes `-D --noBuildLock --buildFuture` so all links stay on localhost. Without it, clicking links would navigate to the production GitHub Pages URL.
 
 ## Deployment
 
