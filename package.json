@@ -1,7 +1,5 @@
 {
   "scripts": {
-    "build:css": "npx @tailwindcss/cli -i assets/css/tailwind.css -o static/css/tailwind.css --minify",
-    "dev:css": "npx @tailwindcss/cli -i assets/css/tailwind.css -o static/css/tailwind.css --watch",
     "dev": "hugo server -D --noBuildLock --buildFuture"
   },
   "name": "portfolio",
