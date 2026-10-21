@@ -64,6 +64,7 @@
       </figure>
     {{- else if .Params.cover.mermaid }}
       {{ partial "mermaid.html" .Params.cover.mermaid -}}
+      <br />
     {{- else if .Params.cover.shortcode }}
       {{- $filePath := printf "layouts/_shortcodes/%s.html" .Params.cover.shortcode -}}
       {{- if fileExists $filePath -}}
@@ -74,6 +75,7 @@
         {{- $renderedContent := $resource | resources.ExecuteAsTemplate $name . -}}
         
         {{- $renderedContent.Content | safeHTML -}}
+        <br />
       {{- end -}}
     {{- end }}
   {{- end }}
